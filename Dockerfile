@@ -41,7 +41,7 @@ RUN apt-get update \
     # Configure conda for the non-root user
     && printf "\n. /opt/conda/etc/profile.d/conda.sh\n" >> /home/${USER_NAME}/.bashrc \
     # Use shared folder for packages and environments
-    && printf "envs_dirs:\n  - ${CONDA_INSTALL_DIR}/envs\npkgs_dirs:\n   - ${CONDA_INSTALL_DIR}/pkgs\n" >> /home/${USER_NAME}/.condarc \
+    && printf "envs_dirs:\n  - /opt/conda/envs\npkgs_dirs:\n   - /opt/conda/pkgs\n" >> /home/${USER_NAME}/.condarc \
     && chown ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/.condarc \
     # See https://github.com/ContinuumIO/anaconda-issues/issues/11148
     && mkdir /home/${USER_NAME}/.conda \
