@@ -1,6 +1,9 @@
 FROM rubensa/ubuntu-tini-user
 LABEL author="Ruben Suarez <rubensa@gmail.com>"
 
+# Node Version Manager version to install
+ARG NVM_VERSION=v0.35.2
+
 # Tell docker that all future commands should be run as root
 USER root
 
@@ -39,7 +42,7 @@ RUN apt-get update \
     && chmod -R ga+wX /opt/conda \
     #
     # Configure conda for the non-root user
-    && printf "\n. /opt/conda/etc/profile.d/conda.sh\n" >> /home/${USER_NAME}/.bashrc \
+    && printf "\n. /opt/conda/etc/profile.d/conda.sh\n" >> /home/${USER_NAME}/.profile \
     # Use shared folder for packages and environments
     && printf "envs_dirs:\n  - /opt/conda/envs\npkgs_dirs:\n   - /opt/conda/pkgs\n" >> /home/${USER_NAME}/.condarc \
     && chown ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/.condarc \
@@ -52,21 +55,21 @@ RUN apt-get update \
     && curl -s "https://get.sdkman.io" | /bin/bash \
     #
     # Assign group folder ownership
-    && chgrp -R ${GROUP_NAME} /opt/sdkman  \
+    && chgrp -R ${GROUP_NAME} /opt/sdkman \
     #
     # Set the segid bit to the folder
-    && chmod -R g+s /opt/sdkman  \
+    && chmod -R g+s /opt/sdkman \
     #
     # Give write and exec acces so anyobody can use it
-    && chmod -R ga+wX /opt/sdkman  \
+    && chmod -R ga+wX /opt/sdkman \
     #
     # Configure sdkman for the non-root user
-    && printf "\nexport SDKMAN_DIR=/opt/sdkman\n. /opt/sdkman/bin/sdkman-init.sh\n" >> /home/${USER_NAME}/.bashrc \
+    && printf "\nexport SDKMAN_DIR=/opt/sdkman\n. /opt/sdkman/bin/sdkman-init.sh\n" >> /home/${USER_NAME}/.profile \
     #
     # Install nvm
     && mkdir -p /opt/nvm \
     && export NVM_DIR=/opt/nvm \
-    && curl -o nvm.sh "https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh" \
+    && curl -o nvm.sh "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" \
     && /bin/bash -l nvm.sh --no-use \
     && rm nvm.sh \
     #
@@ -80,7 +83,7 @@ RUN apt-get update \
     && chmod -R ga+wX /opt/nvm \
     #
     # Configure nvm for the non-root user
-    && printf "\n. /opt/nvm/nvm.sh\n" >> /home/${USER_NAME}/.bashrc \
+    && printf "\n. /opt/nvm/nvm.sh\n" >> /home/${USER_NAME}/.profile \
     #
     # Clean up
     && apt-get autoremove -y \
