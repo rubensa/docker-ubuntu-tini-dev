@@ -2,7 +2,7 @@ FROM rubensa/ubuntu-tini-user
 LABEL author="Ruben Suarez <rubensa@gmail.com>"
 
 # Node Version Manager version to install
-ARG NVM_VERSION=v0.35.2
+ARG NVM_VERSION=v0.35.3
 
 # Tell docker that all future commands should be run as root
 USER root
