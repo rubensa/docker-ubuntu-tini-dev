@@ -1,4 +1,4 @@
-FROM rubensa/ubuntu-tini-user
+FROM rubensa/ubuntu-tini-user:18.04
 LABEL author="Ruben Suarez <rubensa@gmail.com>"
 
 # Node Version Manager version to install (https://github.com/nvm-sh/nvm/releases)
