@@ -1,6 +1,6 @@
 # Docker image with development tools
 
-This is a Docker image based on [rubensa/ubuntu-tini-user](https://github.com/rubensa/docker-ubuntu-tini-user) and includes various development tools.
+This is a Docker image based on [rubensa/ubuntu-tini-user](https://github.com/rubensa/docker-ubuntu-tini-user) 20.04 and includes various development tools.
 
 ## Building
 
@@ -10,7 +10,7 @@ You can build the image like this:
 #!/usr/bin/env bash
 
 docker build --no-cache \
-  -t "rubensa/ubuntu-tini-dev" \
+  -t "rubensa/ubuntu-tini-dev:20.04" \
   --label "maintainer=Ruben Suarez <rubensa@gmail.com>" \
   .
 ```
@@ -43,7 +43,7 @@ docker run --rm -it \
   --name "ubuntu-tini-dev" \
   ${ENV_VARS} \
   ${RUNNER} \
-  rubensa/ubuntu-tini-dev "$@"
+  rubensa/ubuntu-tini-dev:20.04 "$@"
 ```
 
 *NOTE*: Mounting /etc/timezone and /etc/localtime allows you to use your host timezone on container.
