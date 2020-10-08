@@ -20,13 +20,13 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends build-essential procps lsb-release openssh-client bash-completion git curl vim zip unzip p7zip-full p7zip-rar rar unrar 2>&1 \
     #
     # Setup git-lfs repo
-    && curl -L https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash \
+    && curl -sSL https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash \
     #
     # Install git-lfs
     && apt-get -y install --no-install-recommends git-lfs 2>&1 \
     #
     # Install conda
-    && curl -o miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+    && curl -o miniconda.sh -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
     # See https://github.com/ContinuumIO/anaconda-issues/issues/11148
     && mkdir ~/.conda \
     && /bin/bash -l miniconda.sh -b -p /opt/conda \
@@ -52,7 +52,7 @@ RUN apt-get update \
     #
     # Install sdkman
     && export SDKMAN_DIR=/opt/sdkman \
-    && curl -s "https://get.sdkman.io" | /bin/bash \
+    && curl -sSL "https://get.sdkman.io" | /bin/bash \
     #
     # Assign group folder ownership
     && chgrp -R ${GROUP_NAME} /opt/sdkman \
@@ -69,7 +69,7 @@ RUN apt-get update \
     # Install nvm
     && mkdir -p /opt/nvm \
     && export NVM_DIR=/opt/nvm \
-    && curl -o nvm.sh "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" \
+    && curl -o nvm.sh -sSL "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" \
     && /bin/bash -l nvm.sh --no-use \
     && rm nvm.sh \
     #
