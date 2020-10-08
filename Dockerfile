@@ -42,7 +42,7 @@ RUN apt-get update \
     && chmod -R ga+wX /opt/conda \
     #
     # Configure conda for the non-root user
-    && printf "\n. /opt/conda/etc/profile.d/conda.sh\n" >> /home/${USER_NAME}/.profile \
+    && printf "\n. /opt/conda/etc/profile.d/conda.sh\n" >> /home/${USER_NAME}/.bashrc \
     # Use shared folder for packages and environments
     && printf "envs_dirs:\n  - /opt/conda/envs\npkgs_dirs:\n   - /opt/conda/pkgs\n" >> /home/${USER_NAME}/.condarc \
     && chown ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/.condarc \
@@ -64,7 +64,7 @@ RUN apt-get update \
     && chmod -R ga+wX /opt/sdkman \
     #
     # Configure sdkman for the non-root user
-    && printf "\nexport SDKMAN_DIR=/opt/sdkman\n. /opt/sdkman/bin/sdkman-init.sh\n" >> /home/${USER_NAME}/.profile \
+    && printf "\nexport SDKMAN_DIR=/opt/sdkman\n. /opt/sdkman/bin/sdkman-init.sh\n" >> /home/${USER_NAME}/.bashrc \
     #
     # Install nvm
     && mkdir -p /opt/nvm \
@@ -83,7 +83,7 @@ RUN apt-get update \
     && chmod -R ga+wX /opt/nvm \
     #
     # Configure nvm for the non-root user
-    && printf "\n. /opt/nvm/nvm.sh\n" >> /home/${USER_NAME}/.profile \
+    && printf "\n. /opt/nvm/nvm.sh\n" >> /home/${USER_NAME}/.bashrc \
     #
     # Clean up
     && apt-get autoremove -y \
