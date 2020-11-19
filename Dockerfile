@@ -72,6 +72,8 @@ RUN apt-get update \
     && curl -o nvm.sh -sSL "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" \
     && /bin/bash -l nvm.sh --no-use \
     && rm nvm.sh \
+    # Create nvm cache directory so it is owned by the group
+    && mkdir -p /opt/nvm/.cache \
     #
     # Assign group folder ownership
     && chgrp -R ${GROUP_NAME} /opt/nvm \
