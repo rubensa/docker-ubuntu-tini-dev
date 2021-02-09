@@ -1,8 +1,11 @@
 FROM rubensa/ubuntu-tini-user
 LABEL author="Ruben Suarez <rubensa@gmail.com>"
 
-# Node Version Manager version to install
-ARG NVM_VERSION=v0.37.1
+# Node Version Manager version to install (https://github.com/nvm-sh/nvm/releases)
+ARG NVM_VERSION=v0.37.2
+
+# Miniconda Version to install (https://repo.anaconda.com/miniconda/)
+ARG MINICONDA_VERSION=py39_4.9.2
 
 # Tell docker that all future commands should be run as root
 USER root
@@ -26,7 +29,7 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends git-lfs 2>&1 \
     #
     # Install conda
-    && curl -o miniconda.sh -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+    && curl -o miniconda.sh -sSL https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh \
     # See https://github.com/ContinuumIO/anaconda-issues/issues/11148
     && mkdir ~/.conda \
     && /bin/bash -l miniconda.sh -b -p /opt/conda \
