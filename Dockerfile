@@ -20,7 +20,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     # 
     # Install software and needed libraries
-    && apt-get -y install --no-install-recommends build-essential procps lsb-release openssh-client bash-completion git vim zip unzip p7zip-full p7zip-rar rar unrar 2>&1 \
+    && apt-get -y install --no-install-recommends build-essential libxtst6 procps lsb-release openssh-client bash-completion git vim zip unzip p7zip-full p7zip-rar rar unrar 2>&1 \
     #
     # Setup git-lfs repo
     && curl -sSL https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash \
