@@ -20,7 +20,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     # 
     # Install software and needed libraries
-    && apt-get -y install --no-install-recommends build-essential libxtst6 procps lsb-release openssh-client bash-completion git vim zip unzip p7zip-full p7zip-rar rar unrar 2>&1 \
+    && apt-get -y install --no-install-recommends build-essential libxtst6 procps lsb-release openssh-client bash-completion git vim zip unzip p7zip-full p7zip-rar rar unrar bison 2>&1 \
     #
     # Setup git-lfs repo
     && curl -sSL https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash \
@@ -98,6 +98,28 @@ RUN apt-get update \
     # avobe not working as /etc/bash_completion.d/nvm is run before nvm.sh
     # so no nvm command available and the bash_completion scripts checks it
     && printf "\n. /opt/nvm/bash_completion\n" >> /home/${USER_NAME}/.bashrc \
+    #
+    # Install gvm
+    && curl -o gvm-installer -sSL "https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer" \
+    && /bin/bash -i gvm-installer master /opt \
+    && rm gvm-installer \
+    # Create gvm pkgsets directory so it is owned by the group
+    && mkdir -p /opt/gvm/pkgsets \
+    #
+    # Assign group folder ownership
+    && chgrp -R ${GROUP_NAME} /opt/gvm \
+    #
+    # Set the segid bit to the folder
+    && chmod -R g+s /opt/gvm \
+    #
+    # Give write and exec acces so anyobody can use it
+    && chmod -R ga+wX /opt/gvm \
+    #
+    # Configure gvm for the non-root user
+    && printf "\n. /opt/gvm/scripts/gvm\n" >> /home/${USER_NAME}/.bashrc \
+    #
+    # Add gvm bash completion
+    && ln -s /opt/gvm/scripts/completion /etc/bash_completion.d/gvm \
     #
     # Clean up
     && apt-get autoremove -y \
