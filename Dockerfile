@@ -93,6 +93,12 @@ RUN apt-get update \
     # Configure nvm for the non-root user
     && printf "\n. /opt/nvm/nvm.sh\n" >> /home/${USER_NAME}/.bashrc \
     #
+    # Add nvm bash completion
+    #&& ln -s /opt/nvm/bash_completion /etc/bash_completion.d/nvm \
+    # avobe not working as /etc/bash_completion.d/nvm is run before nvm.sh
+    # so no nvm command available and the bash_completion scripts checks it
+    && printf "\n. /opt/nvm/bash_completion\n" >> /home/${USER_NAME}/.bashrc \
+    #
     # Clean up
     && apt-get autoremove -y \
     && apt-get clean -y \
