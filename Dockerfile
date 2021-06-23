@@ -32,7 +32,7 @@ RUN apt-get update \
     && curl -o miniconda.sh -sSL https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh \
     # See https://github.com/ContinuumIO/anaconda-issues/issues/11148
     && mkdir ~/.conda \
-    && /bin/bash -l miniconda.sh -b -p /opt/conda \
+    && /bin/bash -i miniconda.sh -b -p /opt/conda \
     && rm miniconda.sh \
     #
     # Assign group folder ownership
@@ -76,7 +76,7 @@ RUN apt-get update \
     && mkdir -p /opt/nvm \
     && export NVM_DIR=/opt/nvm \
     && curl -o nvm.sh -sSL "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" \
-    && /bin/bash -l nvm.sh --no-use \
+    && /bin/bash -i nvm.sh --no-use \
     && rm nvm.sh \
     # Create nvm cache directory so it is owned by the group
     && mkdir -p /opt/nvm/.cache \
