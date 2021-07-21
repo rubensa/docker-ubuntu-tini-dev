@@ -63,14 +63,14 @@ RUN apt-get update \
     # Set the segid bit to the folder
     && chmod -R g+s /opt/sdkman \
     #
+    # Hack: create file so right permissions are applied
+    && touch /opt/sdkman/var/delay_upgrade \
+    #
     # Give write and exec acces so anyobody can use it
     && chmod -R ga+wX /opt/sdkman \
     #
     # Configure sdkman for the non-root user
     && printf "\nexport SDKMAN_DIR=/opt/sdkman\n. /opt/sdkman/bin/sdkman-init.sh\n" >> /home/${USER_NAME}/.bashrc \
-    #
-    # Add sdkman bash completion
-    && curl -o /etc/bash_completion.d/sdkman -sSL "https://raw.githubusercontent.com/Bash-it/bash-it/master/completion/available/sdkman.completion.bash" \
     #
     # Install nvm
     && mkdir -p /opt/nvm \
