@@ -7,6 +7,13 @@ ARG NVM_VERSION=v0.39.0
 # Miniconda Version to install (https://repo.anaconda.com/miniconda/)
 ARG MINICONDA_VERSION=py39_4.9.2
 
+# .Net installer version (https://docs.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#scripted-install)
+ARG DOTNET_INSTALLER_VERSION=v1
+# Use this path for shared installation
+ENV DOTNET_ROOT=/opt/dotnet
+# Opt out .NET SDK telemetry
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
+
 # Tell docker that all future commands should be run as root
 USER root
 
@@ -20,7 +27,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     # 
     # Install software and needed libraries
-    && apt-get -y install --no-install-recommends build-essential libxtst6 procps lsb-release openssh-client bash-completion git vim zip unzip p7zip-full p7zip-rar rar unrar bison 2>&1 \
+    && apt-get -y install --no-install-recommends build-essential libxtst6 procps lsb-release openssh-client bash-completion git vim zip unzip p7zip-full p7zip-rar rar unrar bison libicu-dev 2>&1 \
     #
     # Setup git-lfs repo
     && curl -sSL https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash \
@@ -120,6 +127,28 @@ RUN apt-get update \
     #
     # Add gvm bash completion
     && ln -s /opt/gvm/scripts/completion /etc/bash_completion.d/gvm \
+    #
+    # Setup .Net installer
+    && curl -o /usr/local/bin/dotnet-install.sh -sSL https://dot.net/v1/dotnet-install.sh \
+    && chmod a+rx /usr/local/bin/dotnet-install.sh \
+    #
+    # Setup .Net shared installation directory
+    && mkdir -p ${DOTNET_ROOT} \
+    #
+    # Assign group folder ownership
+    && chgrp -R ${GROUP_NAME} ${DOTNET_ROOT} \
+    #
+    # Set the segid bit to the folder
+    && chmod -R g+s ${DOTNET_ROOT} \
+    #
+    # Give write and exec acces so anyobody can use it
+    && chmod -R ga+wX ${DOTNET_ROOT} \
+    #
+    # Configure .Net for the non-root user
+    && printf "\nPATH=\$PATH:\$DOTNET_ROOT" >> /home/${USER_NAME}/.bashrc \
+    #
+    # Configure dotnet bash completion
+    && curl -o /etc/bash_completion.d/dotnet -sSL "https://github.com/dotnet/cli/raw/master/scripts/register-completions.bash" \
     #
     # Clean up
     && apt-get autoremove -y \
