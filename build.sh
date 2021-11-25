@@ -2,7 +2,7 @@
 
 DOCKER_REPOSITORY_NAME="rubensa"
 DOCKER_IMAGE_NAME="ubuntu-tini-dev"
-DOCKER_IMAGE_TAG="latest"
+DOCKER_IMAGE_TAG="18.04"
 
 # see: https://github.com/docker/buildx/issues/495#issuecomment-761562905
 #docker buildx build --platform=linux/amd64,linux/arm64 --no-cache --progress=plain --pull \
