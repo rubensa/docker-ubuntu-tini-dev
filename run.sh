@@ -2,7 +2,7 @@
 
 DOCKER_REPOSITORY_NAME="rubensa"
 DOCKER_IMAGE_NAME="ubuntu-tini-dev"
-DOCKER_IMAGE_TAG="latest"
+DOCKER_IMAGE_TAG="18.04"
 
 # Get current user UID
 USER_ID=$(id -u)
