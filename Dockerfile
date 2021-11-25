@@ -2,7 +2,7 @@ FROM rubensa/ubuntu-tini-user
 LABEL author="Ruben Suarez <rubensa@gmail.com>"
 
 # Node Version Manager version to install (https://github.com/nvm-sh/nvm/releases)
-ARG NVM_VERSION=v0.38.0
+ARG NVM_VERSION=v0.39.0
 
 # Miniconda Version to install (https://repo.anaconda.com/miniconda/)
 ARG MINICONDA_VERSION=py39_4.9.2
