@@ -1,4 +1,4 @@
-FROM rubensa/ubuntu-tini-user
+FROM rubensa/ubuntu-tini-user:18.04
 LABEL author="Ruben Suarez <rubensa@gmail.com>"
 
 # Architecture component of TARGETPLATFORM (platform of the build result)
@@ -17,8 +17,8 @@ RUN apt-get update
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies and other usefull software and libraries
-RUN echo "# Installing curl, netcat-openbsd, unzip, zip, build-essential, git, bison, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev, libmysqlclient-dev, unixodbc-dev, libpq-dev, freetds-dev, libicu-dev, libxtst6, procps, lsb-release, openssh-client, p7zip-full, p7zip-rar, unrar, jq and bsdmainutils..." \
-  && apt-get -y install --no-install-recommends curl netcat-openbsd unzip zip build-essential git bison libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev libmysqlclient-dev unixodbc-dev libpq-dev freetds-dev libicu-dev libxtst6 procps lsb-release openssh-client p7zip-full p7zip-rar unrar jq bsdmainutils 2>&1 \
+RUN echo "# Installing curl, netcat-openbsd, unzip, zip, build-essential, git, bison, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm5, libgdbm-dev, libdb-dev, libmysqlclient-dev, unixodbc-dev, libpq-dev, freetds-dev, libicu-dev, libxtst6, procps, lsb-release, openssh-client, p7zip-full, p7zip-rar, unrar, jq and bsdmainutils..." \
+  && apt-get -y install --no-install-recommends curl netcat-openbsd unzip zip build-essential git bison libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev libdb-dev libmysqlclient-dev unixodbc-dev libpq-dev freetds-dev libicu-dev libxtst6 procps lsb-release openssh-client p7zip-full p7zip-rar unrar jq bsdmainutils 2>&1 \
   && if [ "$TARGETARCH" = "amd64" ]; then echo "# Installing rar..."; apt-get -y install --no-install-recommends rar 2>&1; fi
 
 # Docker CLI Version (https://download.docker.com/linux/static/stable/)
@@ -195,7 +195,7 @@ ARG RBENV_VERSION=1.3.0
 ARG RUBY_BUILD_VERSION=20240709.1
 # rbenv installation directory
 ENV RBENV_ROOT=/opt/rbenv
-# Install Ruby Environment Manager (requires curl, autoconf, bison, build-essential, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev)
+# Install Ruby Environment Manager (requires curl, autoconf, bison, build-essential, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm5, libgdbm-dev, libdb-dev)
 RUN echo "# Installing rbenv (with ruby-build)..." \
   && curl -o /tmp/rbenv-${RBENV_VERSION}.tar.gz -sSL https://github.com/rbenv/rbenv/archive/refs/tags/v${RBENV_VERSION}.tar.gz \
   && curl -o /tmp/ruby-build-${RUBY_BUILD_VERSION}.tar.gz -sSL https://github.com/rbenv/ruby-build/archive/refs/tags/v${RUBY_BUILD_VERSION}.tar.gz \
@@ -247,10 +247,10 @@ RUN echo "# Installing rbenv (with ruby-build)..." \
   && curl -o /usr/share/bash-completion/completions/ruby -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-ruby \
   && chmod 644 /usr/share/bash-completion/completions/ruby
 
-# Ubuntu 22.04 comes with OpenSSL 3.0 and Ruby versions earlier than 2.4 used OpenSSL 1.0
+# Ubuntu 18.04 comes with OpenSSL 1.1 and Ruby versions earlier than 2.4 used OpenSSL 1.0
 # openssl installation directory
 ENV OPENSSL_ROOT_1_0=/opt/openssl-1.0
-COPY --from=rubensa/ubuntu-openssl-old ${OPENSSL_ROOT_1_0} ${OPENSSL_ROOT_1_0}
+COPY --from=rubensa/ubuntu-openssl-old:18.04 ${OPENSSL_ROOT_1_0} ${OPENSSL_ROOT_1_0}
 # Install OpenSSL 1.0
 RUN echo "# Installing OpenSSL 1.0..." \
   #
@@ -258,17 +258,6 @@ RUN echo "# Installing OpenSSL 1.0..." \
   && rm -rf ${OPENSSL_ROOT_1_0}/certs \
   && ln -s /etc/ssl/certs ${OPENSSL_ROOT_1_0}
 # Use RUBY_CONFIGURE_OPTS=--with-openssl-dir=${OPENSSL_ROOT_1_0} before the command to install the ruby version < 2.4
-
-# Ubuntu 22.04 comes with OpenSSL 3.0 and Ruby versions earlier than 3.1 used OpenSSL 1.1
-# openssl installation directory
-ENV OPENSSL_ROOT_1_1=/opt/openssl-1.1
-COPY --from=rubensa/ubuntu-openssl-old ${OPENSSL_ROOT_1_1} ${OPENSSL_ROOT_1_1}
-# Install OpenSSL 1.1
-RUN echo "# Installing OpenSSL 1.1..." \
-  # Link the system's certs to OpenSSL directory
-  && rm -rf ${OPENSSL_ROOT_1_1}/certs \
-  && ln -s /etc/ssl/certs ${OPENSSL_ROOT_1_1}
-# Use RUBY_CONFIGURE_OPTS=--with-openssl-dir=${OPENSSL_ROOT_1_1} before the command to install the ruby version < 3.1
 
 # .Net installer version (https://docs.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#scripted-install)
 ARG DOTNET_INSTALLER_VERSION=v1
