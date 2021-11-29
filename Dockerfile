@@ -145,7 +145,7 @@ RUN apt-get update \
     && chmod -R ga+wX ${DOTNET_ROOT} \
     #
     # Configure .Net for the non-root user
-    && printf "\nPATH=\$PATH:\$DOTNET_ROOT" >> /home/${USER_NAME}/.bashrc \
+    && printf "\nPATH=\$PATH:\$DOTNET_ROOT\n" >> /home/${USER_NAME}/.bashrc \
     #
     # Configure dotnet bash completion
     && curl -o /etc/bash_completion.d/dotnet -sSL "https://github.com/dotnet/cli/raw/master/scripts/register-completions.bash" \
