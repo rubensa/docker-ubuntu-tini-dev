@@ -155,8 +155,10 @@ RUN echo "# Installing gvm..." \
     && printf "\n. /opt/gvm/scripts/gvm\n" >> /home/${USER_NAME}/.bashrc \
     #
     # Add gvm bash completion
-    && echo "# Configuring gvm autocomplete..." \
-    && ln -s /opt/gvm/scripts/completion /etc/bash_completion.d/gvm
+    #&& ln -s /opt/gvm/scripts/completion /etc/bash_completion.d/gvm
+    # avobe not working as $GVM_ROOT is set by /opt/gvm/scripts/gvm
+    && echo "# Configuring gvm autocomplete for '${USER_NAME}'..." \
+    && printf "\n. /opt/gvm/scripts/completion\n" >> /home/${USER_NAME}/.bashrc
 
 # Install dotnet-install dependencies
 RUN apt-get -y install --no-install-recommends curl libicu-dev 2>&1
