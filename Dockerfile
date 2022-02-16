@@ -84,8 +84,8 @@ RUN echo "# Installing sdkman..." \
     # Set the segid bit to the folder
     && chmod -R g+s /opt/sdkman \
     #
-    # Hack: create file so right permissions are applied
-    && touch /opt/sdkman/var/delay_upgrade \
+    # Disable sdkman auto-update prompt
+    && sed -i 's/sdkman_selfupdate_enable=true/sdkman_selfupdate_enable=false/g' /opt/sdkman/etc/config \
     #
     # Give write and exec acces so anyobody can use it
     && chmod -R ga+wX /opt/sdkman \
