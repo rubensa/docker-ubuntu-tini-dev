@@ -11,7 +11,7 @@ You can build the image like this:
 
 DOCKER_REPOSITORY_NAME="rubensa"
 DOCKER_IMAGE_NAME="ubuntu-tini-dev"
-DOCKER_IMAGE_TAG="latest"
+DOCKER_IMAGE_TAG="gitpod"
 
 docker buildx build --platform=linux/amd64,linux/arm64 --no-cache \
   -t "${DOCKER_REPOSITORY_NAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" \
@@ -32,7 +32,7 @@ You can run the container like this (change --rm with -d if you don't want the c
 
 DOCKER_REPOSITORY_NAME="rubensa"
 DOCKER_IMAGE_NAME="ubuntu-tini-dev"
-DOCKER_IMAGE_TAG="latest"
+DOCKER_IMAGE_TAG="gitpod"
 
 # Get current user UID
 USER_ID=$(id -u)

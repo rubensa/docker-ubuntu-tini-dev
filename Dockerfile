@@ -1,4 +1,4 @@
-FROM rubensa/ubuntu-tini-user
+FROM rubensa/ubuntu-tini-user:gitpod
 LABEL author="Ruben Suarez <rubensa@gmail.com>"
 
 # Architecture component of TARGETPLATFORM (platform of the build result)
