@@ -46,8 +46,7 @@ ADD https://github.com/tartansandal/conda-bash-completion/archive/refs/tags/${CO
 RUN echo "# Installing conda autocomplete..." \
     && tar xvfz /tmp/conda-bash-completion.tar.gz --directory /tmp \
     && rm /tmp/conda-bash-completion.tar.gz \
-    && mkdir -p /etc/bash_completion.d/ \
-    && cp /tmp/conda-bash-completion-${CONDA_BASHCOMPLETION_VERSION}/conda /etc/bash_completion.d/conda \
+    && cp /tmp/conda-bash-completion-${CONDA_BASHCOMPLETION_VERSION}/conda /usr/share/bash-completion/completions/conda \
     && rm -rf /tmp/conda-bash-completion-${CONDA_BASHCOMPLETION_VERSION}
 
 # Avoid warnings by switching to noninteractive
@@ -124,8 +123,8 @@ RUN echo "# Installing nvm..." \
     && printf "\n. /opt/nvm/nvm.sh\n" >> /home/${USER_NAME}/.bashrc \
     #
     # Add nvm bash completion
-    #&& ln -s /opt/nvm/bash_completion /etc/bash_completion.d/nvm \
-    # avobe not working as /etc/bash_completion.d/nvm is run before nvm.sh
+    #&& ln -s /opt/nvm/bash_completion /usr/share/bash-completion/completions/nvm \
+    # avobe not working as /usr/share/bash-completion/completions/nvm is run before nvm.sh
     # so no nvm command available and the bash_completion scripts checks it
     && echo "# Configuring nvm autocomplete for '${USER_NAME}'..." \
     && printf "\n. /opt/nvm/bash_completion\n" >> /home/${USER_NAME}/.bashrc
@@ -155,7 +154,7 @@ RUN echo "# Installing gvm..." \
     && printf "\n. /opt/gvm/scripts/gvm\n" >> /home/${USER_NAME}/.bashrc \
     #
     # Add gvm bash completion
-    #&& ln -s /opt/gvm/scripts/completion /etc/bash_completion.d/gvm
+    #&& ln -s /opt/gvm/scripts/completion /usr/share/bash-completion/completions/gvm
     # avobe not working as $GVM_ROOT is set by /opt/gvm/scripts/gvm
     && echo "# Configuring gvm autocomplete for '${USER_NAME}'..." \
     && printf "\n. /opt/gvm/scripts/completion\n" >> /home/${USER_NAME}/.bashrc
@@ -191,11 +190,11 @@ RUN echo "# Installing dotnet-install..." \
     && printf "\nPATH=\$PATH:\$DOTNET_ROOT\n" >> /home/${USER_NAME}/.bashrc
 
 # Add dotnet bash completion
-ADD https://github.com/dotnet/cli/raw/master/scripts/register-completions.bash /etc/bash_completion.d/dotnet
+ADD https://github.com/dotnet/cli/raw/master/scripts/register-completions.bash /usr/share/bash-completion/completions/dotnet
 RUN echo "# Installing dotnet autocomplete..." \
     #
     # Configure dotnet bash completion
-    && chmod 644 /etc/bash_completion.d/dotnet
+    && chmod 644 /usr/share/bash-completion/completions/dotnet
 
 # Add git-lfs
 ADD https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh /tmp/git-lfs-repos.sh
