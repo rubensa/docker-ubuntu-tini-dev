@@ -183,7 +183,7 @@ RUN echo "# Installing rvm..." \
     #
     # Cleanup
     && rm /tmp/rvm-${RVM_VERSION}.tar.gz \
-    && rm -rf rvm-${RVM_VERSION} \
+    && rm -rf /tmp/rvm-${RVM_VERSION} \
     #
     # Configure rvm for the non-root user
     && echo "# Configuring rvm for '${USER_NAME}'..." \
