@@ -59,7 +59,9 @@ RUN echo "# Installing wait-for dependencies (netcat)..." \
 ARG WAITFOR_VERSION=v2.2.2
 # Add wait-for (requires netcat)
 RUN echo "# Installing wait-for..."
-ADD --chown=root:root --chmod=4755 https://github.com/eficode/wait-for/releases/download/${WAITFOR_VERSION}/wait-for /usr/bin/wait-for
+ADD https://github.com/eficode/wait-for/releases/download/${WAITFOR_VERSION}/wait-for /usr/local/bin/wait-for
+RUN chown root:root /usr/local/bin/wait-for \
+    && chmod 4755 /usr/local/bin/wait-for
 
 # Install sdkman dependencies
 RUN echo "# Installing sdkman dependencies (unzip, zip, curl)..." \
@@ -86,6 +88,10 @@ RUN export SDKMAN_DIR=/opt/sdkman \
     # Configure sdkman for the non-root user
     && echo "# Configuring sdkman for '${USER_NAME}'..." \
     && printf "\nexport SDKMAN_DIR=/opt/sdkman\n. /opt/sdkman/bin/sdkman-init.sh\n" >> /home/${USER_NAME}/.bashrc
+# Add bash completion for maven
+RUN echo "# Installing bash completion for maven..."
+ADD https://raw.github.com/juven/maven-bash-completion/master/bash_completion.bash /usr/share/bash-completion/completions/mvn
+RUN chmod 644 /usr/share/bash-completion/completions/mvn
 
 # Install nvm dependencies
 RUN echo "# Installing nvm dependencies (curl)..." \
@@ -174,8 +180,8 @@ RUN tar xzf /tmp/rvm-${RVM_VERSION}.tar.gz -C /tmp \
     # Set the segid bit to the folder
     && chmod -R g+s /opt/rvm \
     #
-    # Give write and exec acces so any member of group can use it
-    && chmod -R g+wX /opt/rvm \
+    # Give write and exec acces so any member of group can use it (but not others)
+    && chmod -R 775 /opt/rvm \
     #
     # Cleanup
     && rm /tmp/rvm-${RVM_VERSION}.tar.gz \
@@ -192,12 +198,18 @@ RUN tar xzf /tmp/rvm-${RVM_VERSION}.tar.gz -C /tmp \
     && printf "\n. /opt/rvm/scripts/completion\n" >> /home/${USER_NAME}/.bashrc
 # Add bash completion for Ruby-related commands
 RUN echo "# Installing bash completion for Ruby-related commands (bundle, gem, jruby, rails, rake, ruby)..."
-ADD --chmod=644 https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-bundle /usr/share/bash-completion/completions/bundle
-ADD --chmod=644 https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-gem /usr/share/bash-completion/completions/gem
-ADD --chmod=644 https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-jruby /usr/share/bash-completion/completions/jruby
-ADD --chmod=644 https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rails /usr/share/bash-completion/completions/rails
-ADD --chmod=644 https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rake /usr/share/bash-completion/completions/rake
-ADD --chmod=644 https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-ruby /usr/share/bash-completion/completions/ruby
+ADD https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-bundle /usr/share/bash-completion/completions/bundle
+ADD https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-gem /usr/share/bash-completion/completions/gem
+ADD https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-jruby /usr/share/bash-completion/completions/jruby
+ADD https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rails /usr/share/bash-completion/completions/rails
+ADD https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rake /usr/share/bash-completion/completions/rake
+ADD https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-ruby /usr/share/bash-completion/completions/ruby
+RUN chmod 644 /usr/share/bash-completion/completions/bundle \
+    && chmod 644 /usr/share/bash-completion/completions/gem \
+    && chmod 644 /usr/share/bash-completion/completions/jruby \
+    && chmod 644 /usr/share/bash-completion/completions/rails \
+    && chmod 644 /usr/share/bash-completion/completions/rake \
+    && chmod 644 /usr/share/bash-completion/completions/ruby
 
 # Install dotnet-install dependencies
 RUN echo "# Installing dotnet-install dependencies (curl, libicu-dev)..." \
@@ -210,7 +222,8 @@ ENV DOTNET_ROOT=/opt/dotnet
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 # Install .Net installer (requires curl; dotnet requires libicu-dev)
 RUN echo "# Installing dotnet-install..."
-ADD --chmod=755 https://dot.net/v1/dotnet-install.sh /usr/local/bin/dotnet-install.sh
+ADD https://dot.net/v1/dotnet-install.sh /usr/local/bin/dotnet-install.sh
+RUN chmod 755 /usr/local/bin/dotnet-install.sh
 # Setup .Net shared installation directory
 RUN mkdir -p ${DOTNET_ROOT} \
     #
@@ -227,7 +240,8 @@ RUN mkdir -p ${DOTNET_ROOT} \
     && printf "\nPATH=\$PATH:\$DOTNET_ROOT\n" >> /home/${USER_NAME}/.bashrc
 # Add dotnet bash completion
 RUN echo "# Installing dotnet autocomplete..."
-ADD --chmod=644 https://github.com/dotnet/cli/raw/master/scripts/register-completions.bash /usr/share/bash-completion/completions/dotnet
+ADD https://github.com/dotnet/cli/raw/master/scripts/register-completions.bash /usr/share/bash-completion/completions/dotnet
+RUN chmod 644 /usr/share/bash-completion/completions/dotnet
 
 # Install git-lfs
 RUN echo "# Installing git-lfs..."
