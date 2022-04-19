@@ -146,51 +146,50 @@ RUN /bin/bash -i /tmp/gvm-installer.sh master /opt \
     && echo "# Configuring gvm autocomplete for '${USER_NAME}'..." \
     && printf "\n. /opt/gvm/scripts/completion\n" >> /home/${USER_NAME}/.bashrc
 
-# Install rvm dependencies
-RUN echo "# Installing rvm dependencies (curl, patch, gawk, g++, gcc, autoconf, automake, bison, libc6-dev, libffi-dev, libgdbm-dev, libncurses5-dev, libsqlite3-dev, libtool, libyaml-dev, make, patch, pkg-config, sqlite3, zlib1g-dev, libgmp-dev, libreadline-dev, libssl-dev, git)..." \
-    && apt-get -y install --no-install-recommends curl patch gawk g++ gcc autoconf automake bison libc6-dev libffi-dev libgdbm-dev libncurses5-dev libsqlite3-dev libtool libyaml-dev make patch pkg-config sqlite3 zlib1g-dev libgmp-dev libreadline-dev libssl-dev git 2>&1
-# Ruby < 2.4 is not compatible with openssl 1.1, so, you need libssl1.0-dev
-# For installing an old ruby version run:
-# rvm pkg install openssl
-# rvm install 2.3.1 --with-openssl-dir=$rvm_path/usr --autolibs=disable
-# RVM version to install (https://github.com/rvm/rvm/releases)
-ARG RVM_VERSION=1.29.3
-# Install Ruby Version Manager
-RUN echo "# Installing rvm..."
-ADD https://github.com/rvm/rvm/archive/refs/tags/${RVM_VERSION}.tar.gz /tmp/rvm-${RVM_VERSION}.tar.gz
-# Create shared install folder
-RUN mkdir -p /opt/rvm \
+# Install rbenv dependencies
+RUN echo "# Installing rbenv dependencies (curl, autoconf, bison, build-essential, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev)..." \
+    && apt-get -y install --no-install-recommends curl autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev 2>&1
+# rbenv version to install (https://github.com/rbenv/rbenv/releases)
+ARG RBENV_VERSION=1.2.0
+# ruby-build version to install (https://github.com/rbenv/ruby-build/releases)
+ARG RUBY_BUILD_VERSION=20220415
+# rbenv installation directory
+ENV RBENV_ROOT=/opt/rbenv
+# Install Ruby Environment Manager
+RUN echo "# Installing rbenv (with ruby-build)..."
+ADD https://github.com/rbenv/rbenv/archive/refs/tags/v${RBENV_VERSION}.tar.gz /tmp/rbenv-${RBENV_VERSION}.tar.gz
+ADD https://github.com/rbenv/ruby-build/archive/refs/tags/v${RUBY_BUILD_VERSION}.tar.gz /tmp/ruby-build-${RUBY_BUILD_VERSION}.tar.gz
+# Create installation folders
+RUN mkdir -p ${RBENV_ROOT}/plugins/ruby-build \
+    #
+    # Create sources cache directory
+    && mkdir -p ${RBENV_ROOT}/cache \
+    #
+    # Create installed versions directory
+    && mkdir -p ${RBENV_ROOT}/versions \
+    #
+    # Install rbenv
+    && tar xzf /tmp/rbenv-${RBENV_VERSION}.tar.gz -C ${RBENV_ROOT} --strip-components=1 \
+    #
+    # Compile dynamic bash extension to speed up rbenv
+    && cd ${RBENV_ROOT} && src/configure && make -C src \
+    #
+    # Install ruby-build
+    && tar xzf /tmp/ruby-build-${RUBY_BUILD_VERSION}.tar.gz -C ${RBENV_ROOT}/plugins/ruby-build --strip-components=1 \
     #
     # Assign group folder ownership
-    && chgrp ${GROUP_NAME} /opt/rvm \
+    && chgrp -R ${GROUP_NAME} ${RBENV_ROOT} \
     #
     # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
-    && chmod 2775 /opt/rvm \
-    #
-    # Install rvm
-    && tar xzf /tmp/rvm-${RVM_VERSION}.tar.gz -C /tmp \
-    && cd /tmp/rvm-${RVM_VERSION} \
-    && ./install --path /opt/rvm \
-    #
-    # Assign group folder ownership
-    && chgrp -R ${GROUP_NAME} /opt/rvm \
-    #
-    # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
-    && chmod -R 2775 /opt/rvm \
+    && chmod -R 2775 ${RBENV_ROOT} \
     #
     # Cleanup
-    && rm /tmp/rvm-${RVM_VERSION}.tar.gz \
-    && rm -rf /tmp/rvm-${RVM_VERSION} \
+    && rm /tmp/rbenv-${RBENV_VERSION}.tar.gz \
+    && rm /tmp/ruby-build-${RUBY_BUILD_VERSION}.tar.gz \
     #
     # Configure rvm for the non-root user
     && echo "# Configuring rvm for '${USER_NAME}'..." \
-    && printf "\nPATH=\$PATH:/opt/rvm/bin\n. /opt/rvm/scripts/rvm\n" >> /home/${USER_NAME}/.bashrc \
-    #
-    # Add rvm bash completion
-    #&& ln -s /opt/rvm/scripts/completion /usr/share/bash-completion/completions/rvm
-    # avobe not working as $rvm_path is set by /opt/rvm/scripts/rvm
-    && echo "# Configuring rvm autocomplete for '${USER_NAME}'..." \
-    && printf "\n. /opt/rvm/scripts/completion\n" >> /home/${USER_NAME}/.bashrc
+    && printf "\nPATH=${RBENV_ROOT}/bin:\$PATH\neval \"\$(rbenv init -)\"\n" >> /home/${USER_NAME}/.bashrc
 # Add bash completion for Ruby-related commands
 RUN echo "# Installing bash completion for Ruby-related commands (bundle, gem, jruby, rails, rake, ruby)..."
 ADD https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-bundle /usr/share/bash-completion/completions/bundle
