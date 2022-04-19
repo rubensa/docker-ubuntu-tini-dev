@@ -154,7 +154,7 @@ RUN echo "# Installing rvm dependencies (curl, patch, gawk, g++, gcc, autoconf, 
 # rvm pkg install openssl
 # rvm install 2.3.1 --with-openssl-dir=$rvm_path/usr --autolibs=disable
 # RVM version to install (https://github.com/rvm/rvm/releases)
-ARG RVM_VERSION=1.29.12
+ARG RVM_VERSION=1.29.3
 # Install Ruby Version Manager
 RUN echo "# Installing rvm..."
 ADD https://github.com/rvm/rvm/archive/refs/tags/${RVM_VERSION}.tar.gz /tmp/rvm-${RVM_VERSION}.tar.gz
