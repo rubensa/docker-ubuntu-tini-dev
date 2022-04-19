@@ -21,11 +21,8 @@ RUN mkdir ~/.conda \
     && echo "# Configuring conda for '${GROUP_NAME}'..." \
     && chgrp -R ${GROUP_NAME} /opt/conda \
     #
-    # Set the segid bit to the folder
-    && chmod -R g+s /opt/conda \
-    #
-    # Give write and exec acces so anyobody can use it
-    && chmod -R ga+wX /opt/conda \
+    # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
+    && chmod -R 2775 /opt/conda \
     #
     # Configure conda for the non-root user
     && echo "# Configuring conda for '${USER_NAME}'..." \
@@ -76,14 +73,11 @@ RUN export SDKMAN_DIR=/opt/sdkman \
     # Assign group folder ownership
     && chgrp -R ${GROUP_NAME} /opt/sdkman \
     #
-    # Set the segid bit to the folder
-    && chmod -R g+s /opt/sdkman \
-    #
     # Disable sdkman auto-update prompt
     && sed -i 's/sdkman_selfupdate_enable=true/sdkman_selfupdate_enable=false/g' /opt/sdkman/etc/config \
     #
-    # Give write and exec acces so anyobody can use it
-    && chmod -R ga+wX /opt/sdkman \
+    # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
+    && chmod -R 2775 /opt/sdkman \
     #
     # Configure sdkman for the non-root user
     && echo "# Configuring sdkman for '${USER_NAME}'..." \
@@ -111,11 +105,8 @@ RUN mkdir -p /opt/nvm \
     # Assign group folder ownership
     && chgrp -R ${GROUP_NAME} /opt/nvm \
     #
-    # Set the segid bit to the folder
-    && chmod -R g+s /opt/nvm \
-    #
-    # Give write and exec acces so anyobody can use it
-    && chmod -R ga+wX /opt/nvm \
+    # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
+    && chmod -R 2775 /opt/nvm \
     #
     # Configure nvm for the non-root user
     && echo "# Configuring nvm for '${USER_NAME}'..." \
@@ -142,11 +133,8 @@ RUN /bin/bash -i /tmp/gvm-installer.sh master /opt \
     # Assign group folder ownership
     && chgrp -R ${GROUP_NAME} /opt/gvm \
     #
-    # Set the segid bit to the folder
-    && chmod -R g+s /opt/gvm \
-    #
-    # Give write and exec acces so anyobody can use it
-    && chmod -R ga+wX /opt/gvm \
+    # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
+    && chmod -R 2775 /opt/gvm \
     #
     # Configure gvm for the non-root user
     && echo "# Configuring gvm for '${USER_NAME}'..." \
@@ -170,18 +158,25 @@ ARG RVM_VERSION=1.29.12
 # Install Ruby Version Manager
 RUN echo "# Installing rvm..."
 ADD https://github.com/rvm/rvm/archive/refs/tags/${RVM_VERSION}.tar.gz /tmp/rvm-${RVM_VERSION}.tar.gz
-RUN tar xzf /tmp/rvm-${RVM_VERSION}.tar.gz -C /tmp \
+# Create shared install folder
+RUN mkdir -p /opt/rvm \
+    #
+    # Assign group folder ownership
+    && chgrp ${GROUP_NAME} /opt/rvm \
+    #
+    # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
+    && chmod 2775 /opt/rvm \
+    #
+    # Install rvm
+    && tar xzf /tmp/rvm-${RVM_VERSION}.tar.gz -C /tmp \
     && cd /tmp/rvm-${RVM_VERSION} \
     && ./install --path /opt/rvm \
     #
     # Assign group folder ownership
     && chgrp -R ${GROUP_NAME} /opt/rvm \
     #
-    # Set the segid bit to the folder
-    && chmod -R g+s /opt/rvm \
-    #
-    # Give write and exec acces so any member of group can use it (but not others)
-    && chmod -R 775 /opt/rvm \
+    # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
+    && chmod -R 2775 /opt/rvm \
     #
     # Cleanup
     && rm /tmp/rvm-${RVM_VERSION}.tar.gz \
@@ -230,11 +225,8 @@ RUN mkdir -p ${DOTNET_ROOT} \
     # Assign group folder ownership
     && chgrp -R ${GROUP_NAME} ${DOTNET_ROOT} \
     #
-    # Set the segid bit to the folder
-    && chmod -R g+s ${DOTNET_ROOT} \
-    #
-    # Give write and exec acces so anyobody can use it
-    && chmod -R ga+wX ${DOTNET_ROOT} \
+    # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
+    && chmod -R 2775 ${DOTNET_ROOT} \
     #
     # Configure .Net for the non-root user
     && printf "\nPATH=\$PATH:\$DOTNET_ROOT\n" >> /home/${USER_NAME}/.bashrc
