@@ -252,8 +252,9 @@ RUN /bin/bash -i /tmp/git-lfs-repos.sh \
     && apt-get -y install --no-install-recommends git-lfs 2>&1
 
 # Install other usefull software and libraries
-RUN echo "# Installing libxtst6, procps, lsb-release, openssh-client, p7zip-full, p7zip-rar, rar and unrar..." \ 
-    && apt-get -y install --no-install-recommends libxtst6 procps lsb-release openssh-client p7zip-full p7zip-rar rar unrar 2>&1
+RUN echo "# Installing libxtst6, procps, lsb-release, openssh-client, p7zip-full, p7zip-rar and unrar..." \ 
+    && apt-get -y install --no-install-recommends libxtst6 procps lsb-release openssh-client p7zip-full p7zip-rar unrar 2>&1 \
+    && if [ "$TARGETARCH" = "amd64" ]; then echo "# Installing rar..."; apt-get -y install --no-install-recommends rar 2>&1; fi
 
 # Clean up apt
 RUN apt-get autoremove -y \
