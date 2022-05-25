@@ -1,19 +1,32 @@
 FROM rubensa/ubuntu-tini-user
 LABEL author="Ruben Suarez <rubensa@gmail.com>"
 
+# Architecture component of TARGETPLATFORM (platform of the build result)
+ARG TARGETARCH
+
 # Tell docker that all future commands should be run as root
 USER root
 
 # Set root home directory
 ENV HOME=/root
 
+# Configure apt
+RUN apt-get update
+
+# Avoid warnings by switching to noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install miniconda dependencies
+RUN echo "# Installing miniconda dependencies (curl)..." \
+    && apt-get -y install --no-install-recommends curl 2>&1
 # Miniconda Version (https://repo.anaconda.com/miniconda/)
 ARG MINICONDA_VERSION=py39_4.10.3
 # Add conda
-RUN echo "# Installing conda..."
-ADD https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh /tmp/miniconda.sh
-# See https://github.com/ContinuumIO/anaconda-issues/issues/11148
-RUN mkdir ~/.conda \
+RUN echo "# Installing conda..." \
+    && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
+    && curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-${TARGET}.sh -o /tmp/miniconda.sh \
+    # See https://github.com/ContinuumIO/anaconda-issues/issues/11148
+    && mkdir ~/.conda \
     && /bin/bash -i /tmp/miniconda.sh -b -p /opt/conda \
     && rm /tmp/miniconda.sh \
     #
@@ -42,12 +55,6 @@ RUN tar xvfz /tmp/conda-bash-completion.tar.gz --directory /tmp \
     && rm /tmp/conda-bash-completion.tar.gz \
     && cp /tmp/conda-bash-completion-${CONDA_BASHCOMPLETION_VERSION}/conda /usr/share/bash-completion/completions/conda \
     && rm -rf /tmp/conda-bash-completion-${CONDA_BASHCOMPLETION_VERSION}
-
-# Avoid warnings by switching to noninteractive
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Configure apt
-RUN apt-get update
 
 # Install wait-for dependencies
 RUN echo "# Installing wait-for dependencies (netcat)..." \
