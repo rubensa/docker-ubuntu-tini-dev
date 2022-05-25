@@ -1,4 +1,4 @@
-FROM rubensa/ubuntu-tini-user
+FROM rubensa/ubuntu-tini-user:22.04
 LABEL author="Ruben Suarez <rubensa@gmail.com>"
 
 # Architecture component of TARGETPLATFORM (platform of the build result)
@@ -250,7 +250,7 @@ RUN echo "# Installing rbenv (with ruby-build)..." \
 # Ubuntu 22.04 comes with OpenSSL 3.0 and Ruby versions earlier than 2.4 used OpenSSL 1.0
 # openssl installation directory
 ENV OPENSSL_ROOT_1_0=/opt/openssl-1.0
-COPY --from=rubensa/ubuntu-openssl-old ${OPENSSL_ROOT_1_0} ${OPENSSL_ROOT_1_0}
+COPY --from=rubensa/ubuntu-openssl-old:22.04 ${OPENSSL_ROOT_1_0} ${OPENSSL_ROOT_1_0}
 # Install OpenSSL 1.0
 RUN echo "# Installing OpenSSL 1.0..." \
   #
@@ -262,7 +262,7 @@ RUN echo "# Installing OpenSSL 1.0..." \
 # Ubuntu 22.04 comes with OpenSSL 3.0 and Ruby versions earlier than 3.1 used OpenSSL 1.1
 # openssl installation directory
 ENV OPENSSL_ROOT_1_1=/opt/openssl-1.1
-COPY --from=rubensa/ubuntu-openssl-old ${OPENSSL_ROOT_1_1} ${OPENSSL_ROOT_1_1}
+COPY --from=rubensa/ubuntu-openssl-old:22.04 ${OPENSSL_ROOT_1_1} ${OPENSSL_ROOT_1_1}
 # Install OpenSSL 1.1
 RUN echo "# Installing OpenSSL 1.1..." \
   # Link the system's certs to OpenSSL directory
