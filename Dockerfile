@@ -20,7 +20,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN echo "# Installing miniconda dependencies (curl)..." \
     && apt-get -y install --no-install-recommends curl 2>&1
 # Miniconda Version (https://repo.anaconda.com/miniconda/)
-ARG MINICONDA_VERSION=py39_4.10.3
+ARG MINICONDA_VERSION=py39_4.12.0
 # Add conda
 RUN echo "# Installing conda..." \
     && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
@@ -47,7 +47,7 @@ RUN echo "# Installing conda..." \
     && mkdir /home/${USER_NAME}/.conda \
     && chown ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/.conda
 # Bash completion support for the conda command (https://github.com/tartansandal/conda-bash-completion/releases)
-ARG CONDA_BASHCOMPLETION_VERSION=1.5
+ARG CONDA_BASHCOMPLETION_VERSION=1.6
 # Add conda bash completion
 RUN echo "# Installing conda autocomplete..."
 ADD https://github.com/tartansandal/conda-bash-completion/archive/refs/tags/${CONDA_BASHCOMPLETION_VERSION}.tar.gz /tmp/conda-bash-completion.tar.gz
@@ -60,7 +60,7 @@ RUN tar xvfz /tmp/conda-bash-completion.tar.gz --directory /tmp \
 RUN echo "# Installing wait-for dependencies (netcat)..." \
     && apt-get -y install --no-install-recommends netcat 2>&1
 # wait-for version to install (https://github.com/eficode/wait-for/releases)
-ARG WAITFOR_VERSION=v2.2.2
+ARG WAITFOR_VERSION=v2.2.3
 # Add wait-for (requires netcat)
 RUN echo "# Installing wait-for..."
 ADD https://github.com/eficode/wait-for/releases/download/${WAITFOR_VERSION}/wait-for /usr/local/bin/wait-for
@@ -159,7 +159,7 @@ RUN echo "# Installing rbenv dependencies (curl, autoconf, bison, build-essentia
 # rbenv version to install (https://github.com/rbenv/rbenv/releases)
 ARG RBENV_VERSION=1.2.0
 # ruby-build version to install (https://github.com/rbenv/ruby-build/releases)
-ARG RUBY_BUILD_VERSION=20220415
+ARG RUBY_BUILD_VERSION=20220426
 # rbenv installation directory
 ENV RBENV_ROOT=/opt/rbenv
 # Install Ruby Environment Manager
