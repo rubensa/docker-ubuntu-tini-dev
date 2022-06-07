@@ -65,7 +65,7 @@ ARG WAITFOR_VERSION=v2.2.3
 RUN echo "# Installing wait-for..."
 ADD https://github.com/eficode/wait-for/releases/download/${WAITFOR_VERSION}/wait-for /usr/local/bin/wait-for
 RUN chown root:root /usr/local/bin/wait-for \
-    && chmod 4755 /usr/local/bin/wait-for
+    && chmod 755 /usr/local/bin/wait-for
 
 # Install sdkman dependencies
 RUN echo "# Installing sdkman dependencies (unzip, zip, curl)..." \
