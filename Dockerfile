@@ -1,3 +1,44 @@
+# Build old OpenSSL library versions (needed by old Ruby versions)
+FROM ubuntu as openssl-build
+# Architecture component of TARGETPLATFORM (platform of the build result)
+ARG TARGETARCH
+# Configure apt and install openssl build dependencies
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends build-essential zlib1g-dev 2>&1
+# Ubuntu 18.04 comes with OpenSSL 1.1 and Ruby versions earlier than 2.4 used OpenSSL 1.0
+# openssl version to install (https://www.openssl.org/source/old/)
+ARG OPENSSL_VERSION_1_0=1.0.2
+ARG OPENSSL_VERSION_1_0_PATCH=${OPENSSL_VERSION_1_0}u
+ADD https://www.openssl.org/source/old/${OPENSSL_VERSION_1_0}/openssl-${OPENSSL_VERSION_1_0_PATCH}.tar.gz /tmp/openssl-${OPENSSL_VERSION_1_0_PATCH}.tar.gz
+# openssl installation directory
+ENV OPENSSL_ROOT_1_0=/opt/openssl-${OPENSSL_VERSION_1_0_PATCH}
+# Install OpenSSL 1.0
+RUN mkdir -p ${OPENSSL_ROOT_1_0} \
+    && mkdir -p /tmp/openssl-${OPENSSL_VERSION_1_0_PATCH} \
+    && tar xzf /tmp/openssl-${OPENSSL_VERSION_1_0_PATCH}.tar.gz -C /tmp/openssl-${OPENSSL_VERSION_1_0_PATCH} --strip-components=1 \
+    && cd /tmp/openssl-${OPENSSL_VERSION_1_0_PATCH} && ./config --prefix=${OPENSSL_ROOT_1_0} --openssldir=${OPENSSL_ROOT_1_0} shared zlib && make && make install \
+    && rm -rf /tmp/openssl-${OPENSSL_VERSION_1_0_PATCH} \
+    && rm /tmp/openssl-${OPENSSL_VERSION_1_0_PATCH}.tar.gz
+# Ubuntu 22.04 comes with OpenSSL 3.0 and Ruby versions earlier than 3.1 used OpenSSL 1.1
+# openssl version to install (https://www.openssl.org/source/)
+ARG OPENSSL_VERSION_1_1=1.1.1
+ARG OPENSSL_VERSION_1_1_PATCH=${OPENSSL_VERSION_1_1}p
+ADD https://www.openssl.org/source/openssl-${OPENSSL_VERSION_1_1_PATCH}.tar.gz /tmp/openssl-${OPENSSL_VERSION_1_1_PATCH}.tar.gz
+# openssl installation directory
+ENV OPENSSL_ROOT_1_1=/opt/openssl-${OPENSSL_VERSION_1_1_PATCH}
+# Install OpenSSL 1.1
+RUN mkdir -p ${OPENSSL_ROOT_1_1} \
+    && mkdir -p /tmp/openssl-${OPENSSL_VERSION_1_1_PATCH} \
+    && tar xzf /tmp/openssl-${OPENSSL_VERSION_1_1_PATCH}.tar.gz -C /tmp/openssl-${OPENSSL_VERSION_1_1_PATCH} --strip-components=1 \
+    && cd /tmp/openssl-${OPENSSL_VERSION_1_1_PATCH} && ./config --prefix=${OPENSSL_ROOT_1_1} --openssldir=${OPENSSL_ROOT_1_1} shared zlib && make && make install \
+    && rm -rf /tmp/openssl-${OPENSSL_VERSION_1_1_PATCH} \
+    && rm /tmp/openssl-${OPENSSL_VERSION_1_1_PATCH}.tar.gz
+# Clean up apt
+RUN apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
+
+
 FROM rubensa/ubuntu-tini-user
 LABEL author="Ruben Suarez <rubensa@gmail.com>"
 
@@ -127,8 +168,8 @@ RUN mkdir -p /opt/nvm \
     && printf "\n. /opt/nvm/bash_completion\n" >> /home/${USER_NAME}/.bashrc
 
 # Install gvm dependencies
-RUN echo "# Installing gvm dependencies (git, binutils, bison, gcc, make, curl, build-essential)..." \
-    && apt-get -y install --no-install-recommends git binutils bison gcc make curl build-essential 2>&1
+RUN echo "# Installing gvm dependencies (build-essential, git, binutils, bison and curl)..." \
+    && apt-get -y install --no-install-recommends build-essential git bison curl  2>&1
 # Install Go Version Manager (requires git, binutils, bison, gcc, make and curl; go requires build-essential)
 RUN echo "# Installing gvm..."
 ADD https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer /tmp/gvm-installer.sh
@@ -220,23 +261,12 @@ RUN echo "# Installing ruby build dependencies (libmysqlclient-dev, unixodbc-dev
 # openssl version to install (https://www.openssl.org/source/old/)
 ARG OPENSSL_VERSION_1_0=1.0.2
 ARG OPENSSL_VERSION_1_0_PATCH=${OPENSSL_VERSION_1_0}u
-ADD https://www.openssl.org/source/old/${OPENSSL_VERSION_1_0}/openssl-${OPENSSL_VERSION_1_0_PATCH}.tar.gz /tmp/openssl-${OPENSSL_VERSION_1_0_PATCH}.tar.gz
 # openssl installation directory
 ENV OPENSSL_ROOT_1_0=/opt/openssl-${OPENSSL_VERSION_1_0_PATCH}
+COPY --from=openssl-build ${OPENSSL_ROOT_1_0} ${OPENSSL_ROOT_1_0}
 # Install OpenSSL 1.0
 RUN echo "# Installing OpenSSL 1.0..." \
     && mkdir -p ${OPENSSL_ROOT_1_0} \
-    #
-    # Extract opennssl source code
-    && mkdir -p /tmp/openssl-${OPENSSL_VERSION_1_0_PATCH} \
-    && tar xzf /tmp/openssl-${OPENSSL_VERSION_1_0_PATCH}.tar.gz -C /tmp/openssl-${OPENSSL_VERSION_1_0_PATCH} --strip-components=1 \
-    #
-    # Compile openssl
-    && cd /tmp/openssl-${OPENSSL_VERSION_1_0_PATCH} && ./config --prefix=${OPENSSL_ROOT_1_0} --openssldir=${OPENSSL_ROOT_1_0} shared zlib && make && make install \
-    #
-    # Remove sources
-    && rm -rf /tmp/openssl-${OPENSSL_VERSION_1_0_PATCH} \
-    && rm /tmp/openssl-${OPENSSL_VERSION_1_0_PATCH}.tar.gz \
     #
     # Link the system's certs to OpenSSL directory
     && rm -rf ${OPENSSL_ROOT_1_0}/certs \
@@ -247,24 +277,13 @@ RUN echo "# Installing OpenSSL 1.0..." \
 # openssl version to install (https://www.openssl.org/source/)
 ARG OPENSSL_VERSION_1_1=1.1.1
 ARG OPENSSL_VERSION_1_1_PATCH=${OPENSSL_VERSION_1_1}p
-ADD https://www.openssl.org/source/openssl-${OPENSSL_VERSION_1_1_PATCH}.tar.gz /tmp/openssl-${OPENSSL_VERSION_1_1_PATCH}.tar.gz
 # openssl installation directory
 ENV OPENSSL_ROOT_1_1=/opt/openssl-${OPENSSL_VERSION_1_1_PATCH}
+COPY --from=openssl-build ${OPENSSL_ROOT_1_1} ${OPENSSL_ROOT_1_1}
 # Install OpenSSL 1.1
 RUN echo "# Installing OpenSSL 1.1..." \
     && mkdir -p ${OPENSSL_ROOT_1_1} \
     #
-    # Extract opennssl source code
-    && mkdir -p /tmp/openssl-${OPENSSL_VERSION_1_1_PATCH} \
-    && tar xzf /tmp/openssl-${OPENSSL_VERSION_1_1_PATCH}.tar.gz -C /tmp/openssl-${OPENSSL_VERSION_1_1_PATCH} --strip-components=1 \
-    #
-    # Compile openssl
-    && cd /tmp/openssl-${OPENSSL_VERSION_1_1_PATCH} && ./config --prefix=${OPENSSL_ROOT_1_1} --openssldir=${OPENSSL_ROOT_1_1} shared zlib && make && make install \
-     #
-    # Remove sources
-    && rm -rf /tmp/openssl-${OPENSSL_VERSION_1_1_PATCH} \
-    && rm /tmp/openssl-${OPENSSL_VERSION_1_1_PATCH}.tar.gz \
-   #
     # Link the system's certs to OpenSSL directory
     && rm -rf ${OPENSSL_ROOT_1_1}/certs \
     && ln -s /etc/ssl/certs ${OPENSSL_ROOT_1_1}
