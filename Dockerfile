@@ -16,15 +16,19 @@ RUN apt-get update
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install miniconda dependencies
-RUN echo "# Installing miniconda dependencies (curl)..." \
-    && apt-get -y install --no-install-recommends curl 2>&1
+# Install dependencies and other usefull software and libraries
+RUN echo "# Installing curl, netcat, unzip, zip, build-essential, git, bison, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev, libmysqlclient-dev, unixodbc-dev, libpq-dev, freetds-dev, libicu-dev, libxtst6, procps, lsb-release, openssh-client, p7zip-full, p7zip-rar and unrar..." \
+    && apt-get -y install --no-install-recommends curl netcat unzip zip build-essential git bison libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev libmysqlclient-dev unixodbc-dev libpq-dev freetds-dev libicu-dev libxtst6 procps lsb-release openssh-client p7zip-full p7zip-rar unrar 2>&1 \
+    && if [ "$TARGETARCH" = "amd64" ]; then echo "# Installing rar..."; apt-get -y install --no-install-recommends rar 2>&1; fi
+
 # Miniconda Version (https://repo.anaconda.com/miniconda/)
 ARG MINICONDA_VERSION=py39_4.12.0
+# Bash completion support for the conda command (https://github.com/tartansandal/conda-bash-completion/releases)
+ARG CONDA_BASHCOMPLETION_VERSION=1.6
 # Add conda
 RUN echo "# Installing conda..." \
     && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
-    && curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-${TARGET}.sh -o /tmp/miniconda.sh \
+    && curl -o /tmp/miniconda.sh -sSL https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-${TARGET}.sh \
     # See https://github.com/ContinuumIO/anaconda-issues/issues/11148
     && mkdir ~/.conda \
     && /bin/bash -i /tmp/miniconda.sh -b -p /opt/conda \
@@ -40,40 +44,35 @@ RUN echo "# Installing conda..." \
     # Configure conda for the non-root user
     && echo "# Configuring conda for '${USER_NAME}'..." \
     && printf "\n. /opt/conda/etc/profile.d/conda.sh\n" >> /home/${USER_NAME}/.bashrc \
+    #
     # Use shared folder for packages and environments
     && printf "envs_dirs:\n  - /opt/conda/envs\npkgs_dirs:\n   - /opt/conda/pkgs\n" >> /home/${USER_NAME}/.condarc \
     && chown ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/.condarc \
+    #
     # See https://github.com/ContinuumIO/anaconda-issues/issues/11148
     && mkdir /home/${USER_NAME}/.conda \
-    && chown ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/.conda
-# Bash completion support for the conda command (https://github.com/tartansandal/conda-bash-completion/releases)
-ARG CONDA_BASHCOMPLETION_VERSION=1.6
-# Add conda bash completion
-RUN echo "# Installing conda autocomplete..."
-ADD https://github.com/tartansandal/conda-bash-completion/archive/refs/tags/${CONDA_BASHCOMPLETION_VERSION}.tar.gz /tmp/conda-bash-completion.tar.gz
-RUN tar xvfz /tmp/conda-bash-completion.tar.gz --directory /tmp \
+    && chown ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/.conda \
+    #
+    # Add conda bash completion
+    && echo "# Installing conda autocomplete..." \
+    && curl -o /tmp/conda-bash-completion.tar.gz -sSL https://github.com/tartansandal/conda-bash-completion/archive/refs/tags/${CONDA_BASHCOMPLETION_VERSION}.tar.gz \
+    && tar xvfz /tmp/conda-bash-completion.tar.gz --directory /tmp \
     && rm /tmp/conda-bash-completion.tar.gz \
     && cp /tmp/conda-bash-completion-${CONDA_BASHCOMPLETION_VERSION}/conda /usr/share/bash-completion/completions/conda \
     && rm -rf /tmp/conda-bash-completion-${CONDA_BASHCOMPLETION_VERSION}
 
-# Install wait-for dependencies
-RUN echo "# Installing wait-for dependencies (netcat)..." \
-    && apt-get -y install --no-install-recommends netcat 2>&1
 # wait-for version to install (https://github.com/eficode/wait-for/releases)
 ARG WAITFOR_VERSION=v2.2.3
-# Add wait-for (requires netcat)
-RUN echo "# Installing wait-for..."
-ADD https://github.com/eficode/wait-for/releases/download/${WAITFOR_VERSION}/wait-for /usr/local/bin/wait-for
-RUN chown root:root /usr/local/bin/wait-for \
+# Install wait-for (requires netcat)
+RUN echo "# Installing wait-for..." \
+    && curl -o /usr/local/bin/wait-for -sSL https://github.com/eficode/wait-for/releases/download/${WAITFOR_VERSION}/wait-for \
+    && chown root:root /usr/local/bin/wait-for \
     && chmod 755 /usr/local/bin/wait-for
 
-# Install sdkman dependencies
-RUN echo "# Installing sdkman dependencies (unzip, zip, curl)..." \
-    && apt-get -y install --no-install-recommends unzip zip curl 2>&1
 # Install sdkman (requires unzip, zip and curl)
-RUN echo "# Installing sdkman..."
-ADD https://get.sdkman.io /tmp/get-sdkman.sh
-RUN export SDKMAN_DIR=/opt/sdkman \
+RUN echo "# Installing sdkman..." \
+    && curl -o /tmp/get-sdkman.sh -sSL https://get.sdkman.io  \
+    && export SDKMAN_DIR=/opt/sdkman \
     && /bin/bash -i /tmp/get-sdkman.sh \
     && rm /tmp/get-sdkman.sh \
     #
@@ -88,24 +87,23 @@ RUN export SDKMAN_DIR=/opt/sdkman \
     #
     # Configure sdkman for the non-root user
     && echo "# Configuring sdkman for '${USER_NAME}'..." \
-    && printf "\nexport SDKMAN_DIR=/opt/sdkman\n. /opt/sdkman/bin/sdkman-init.sh\n" >> /home/${USER_NAME}/.bashrc
-# Add bash completion for maven
-RUN echo "# Installing bash completion for maven..."
-ADD https://raw.github.com/juven/maven-bash-completion/master/bash_completion.bash /usr/share/bash-completion/completions/mvn
-RUN chmod 644 /usr/share/bash-completion/completions/mvn
+    && printf "\nexport SDKMAN_DIR=/opt/sdkman\n. /opt/sdkman/bin/sdkman-init.sh\n" >> /home/${USER_NAME}/.bashrc \
+    #
+    # Add bash completion for maven
+    && echo "# Installing bash completion for maven..." \
+    && curl -o /usr/share/bash-completion/completions/mvn -sSL https://raw.github.com/juven/maven-bash-completion/master/bash_completion.bash \
+    && chmod 644 /usr/share/bash-completion/completions/mvn
 
-# Install nvm dependencies
-RUN echo "# Installing nvm dependencies (curl)..." \
-    && apt-get -y install --no-install-recommends curl 2>&1
 # Node Version Manager version to install (https://github.com/nvm-sh/nvm/releases)
 ARG NVM_VERSION=v0.39.1
 # Install nvm (requires curl)
-RUN echo "# Installing nvm..."
-ADD https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh /tmp/nvm.sh
-RUN mkdir -p /opt/nvm \
+RUN echo "# Installing nvm..." \
+    && curl -o /tmp/nvm.sh -sSL https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh \
+    && mkdir -p /opt/nvm \
     && export NVM_DIR=/opt/nvm \
     && /bin/bash -i /tmp/nvm.sh --no-use \
     && rm /tmp/nvm.sh \
+    #
     # Create nvm cache directory so it is owned by the group
     && mkdir -p /opt/nvm/.cache \
     #
@@ -119,21 +117,16 @@ RUN mkdir -p /opt/nvm \
     && echo "# Configuring nvm for '${USER_NAME}'..." \
     && printf "\n. /opt/nvm/nvm.sh\n" >> /home/${USER_NAME}/.bashrc \
     #
-    # Add nvm bash completion
-    #&& ln -s /opt/nvm/bash_completion /usr/share/bash-completion/completions/nvm \
-    # avobe not working as /usr/share/bash-completion/completions/nvm is run before nvm.sh
-    # so no nvm command available and the bash_completion scripts checks it
+    # Configure nvm bash completion for the non root user
     && echo "# Configuring nvm autocomplete for '${USER_NAME}'..." \
     && printf "\n. /opt/nvm/bash_completion\n" >> /home/${USER_NAME}/.bashrc
 
-# Install gvm dependencies
-RUN echo "# Installing gvm dependencies (build-essential, git, binutils, bison and curl)..." \
-    && apt-get -y install --no-install-recommends build-essential git bison curl  2>&1
 # Install Go Version Manager (requires git, binutils, bison, gcc, make and curl; go requires build-essential)
-RUN echo "# Installing gvm..."
-ADD https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer /tmp/gvm-installer.sh
-RUN /bin/bash -i /tmp/gvm-installer.sh master /opt \
+RUN echo "# Installing gvm..." \
+    && curl -o /tmp/gvm-installer.sh -sSL https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer \
+    && /bin/bash -i /tmp/gvm-installer.sh master /opt \
     && rm /tmp/gvm-installer.sh \
+    #
     # Create gvm pkgsets directory so it is owned by the group
     && mkdir -p /opt/gvm/pkgsets \
     #
@@ -147,27 +140,23 @@ RUN /bin/bash -i /tmp/gvm-installer.sh master /opt \
     && echo "# Configuring gvm for '${USER_NAME}'..." \
     && printf "\n. /opt/gvm/scripts/gvm\n" >> /home/${USER_NAME}/.bashrc \
     #
-    # Add gvm bash completion
-    #&& ln -s /opt/gvm/scripts/completion /usr/share/bash-completion/completions/gvm
-    # avobe not working as $GVM_ROOT is set by /opt/gvm/scripts/gvm
+    # Configure gvm bash completion for the non root user
     && echo "# Configuring gvm autocomplete for '${USER_NAME}'..." \
     && printf "\n. /opt/gvm/scripts/completion\n" >> /home/${USER_NAME}/.bashrc
 
-# Install rbenv dependencies
-RUN echo "# Installing rbenv dependencies (curl, autoconf, bison, build-essential, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev)..." \
-    && apt-get -y install --no-install-recommends curl autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev 2>&1
 # rbenv version to install (https://github.com/rbenv/rbenv/releases)
 ARG RBENV_VERSION=1.2.0
 # ruby-build version to install (https://github.com/rbenv/ruby-build/releases)
 ARG RUBY_BUILD_VERSION=20220426
 # rbenv installation directory
 ENV RBENV_ROOT=/opt/rbenv
-# Install Ruby Environment Manager
-RUN echo "# Installing rbenv (with ruby-build)..."
-ADD https://github.com/rbenv/rbenv/archive/refs/tags/v${RBENV_VERSION}.tar.gz /tmp/rbenv-${RBENV_VERSION}.tar.gz
-ADD https://github.com/rbenv/ruby-build/archive/refs/tags/v${RUBY_BUILD_VERSION}.tar.gz /tmp/ruby-build-${RUBY_BUILD_VERSION}.tar.gz
-# Create installation folders
-RUN mkdir -p ${RBENV_ROOT}/plugins/ruby-build \
+# Install Ruby Environment Manager (requires curl, autoconf, bison, build-essential, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev)
+RUN echo "# Installing rbenv (with ruby-build)..." \
+    && curl -o /tmp/rbenv-${RBENV_VERSION}.tar.gz -sSL https://github.com/rbenv/rbenv/archive/refs/tags/v${RBENV_VERSION}.tar.gz \
+    && curl -o /tmp/ruby-build-${RUBY_BUILD_VERSION}.tar.gz -sSL https://github.com/rbenv/ruby-build/archive/refs/tags/v${RUBY_BUILD_VERSION}.tar.gz \
+    #
+    # Create installation folders
+    && mkdir -p ${RBENV_ROOT}/plugins/ruby-build \
     #
     # Create sources cache directory
     && mkdir -p ${RBENV_ROOT}/cache \
@@ -194,27 +183,24 @@ RUN mkdir -p ${RBENV_ROOT}/plugins/ruby-build \
     && rm /tmp/rbenv-${RBENV_VERSION}.tar.gz \
     && rm /tmp/ruby-build-${RUBY_BUILD_VERSION}.tar.gz \
     #
-    # Configure rvm for the non-root user
-    && echo "# Configuring rvm for '${USER_NAME}'..." \
-    && printf "\nPATH=${RBENV_ROOT}/bin:\$PATH\neval \"\$(rbenv init -)\"\n" >> /home/${USER_NAME}/.bashrc
-# Add bash completion for Ruby-related commands
-RUN echo "# Installing bash completion for Ruby-related commands (bundle, gem, jruby, rails, rake, ruby)..."
-ADD https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-bundle /usr/share/bash-completion/completions/bundle
-ADD https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-gem /usr/share/bash-completion/completions/gem
-ADD https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-jruby /usr/share/bash-completion/completions/jruby
-ADD https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rails /usr/share/bash-completion/completions/rails
-ADD https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rake /usr/share/bash-completion/completions/rake
-ADD https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-ruby /usr/share/bash-completion/completions/ruby
-RUN chmod 644 /usr/share/bash-completion/completions/bundle \
+    # Configure rbenv for the non-root user
+    && echo "# Configuring rbenv for '${USER_NAME}'..." \
+    && printf "\nPATH=${RBENV_ROOT}/bin:\$PATH\neval \"\$(rbenv init -)\"\n" >> /home/${USER_NAME}/.bashrc \
+    #
+    # Add bash completion for Ruby-related commands
+    && echo "# Installing bash completion for Ruby-related commands (bundle, gem, jruby, rails, rake, ruby)..." \
+    && curl -o /usr/share/bash-completion/completions/bundle -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-bundle \
+    && curl -o /usr/share/bash-completion/completions/gem -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-gem \
+    && curl -o /usr/share/bash-completion/completions/jruby -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-jruby \
+    && curl -o /usr/share/bash-completion/completions/rails -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rails \
+    && curl -o /usr/share/bash-completion/completions/rake -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rake \
+    && curl -o /usr/share/bash-completion/completions/ruby -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-ruby \
+    && chmod 644 /usr/share/bash-completion/completions/bundle \
     && chmod 644 /usr/share/bash-completion/completions/gem \
     && chmod 644 /usr/share/bash-completion/completions/jruby \
     && chmod 644 /usr/share/bash-completion/completions/rails \
     && chmod 644 /usr/share/bash-completion/completions/rake \
     && chmod 644 /usr/share/bash-completion/completions/ruby
-
-# Install ruby build dependencies
-RUN echo "# Installing ruby build dependencies (libmysqlclient-dev, unixodbc-dev, libpq-dev, freetds-dev)..." \
-  && apt-get -y install --no-install-recommends libmysqlclient-dev unixodbc-dev libpq-dev freetds-dev 2>&1
 
 # Ubuntu 18.04 comes with OpenSSL 1.1 and Ruby versions earlier than 2.4 used OpenSSL 1.0
 # openssl installation directory
@@ -239,9 +225,6 @@ RUN echo "# Installing OpenSSL 1.1..." \
     && ln -s /etc/ssl/certs ${OPENSSL_ROOT_1_1}
     # Use RUBY_CONFIGURE_OPTS=--with-openssl-dir=${OPENSSL_ROOT_1_1} before the command to install the ruby version < 3.1
 
-# Install dotnet-install dependencies
-RUN echo "# Installing dotnet-install dependencies (curl, libicu-dev)..." \
-    && apt-get -y install --no-install-recommends curl libicu-dev 2>&1
 # .Net installer version (https://docs.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#scripted-install)
 ARG DOTNET_INSTALLER_VERSION=v1
 # Use this path for shared installation
@@ -249,11 +232,12 @@ ENV DOTNET_ROOT=/opt/dotnet
 # Opt out .NET SDK telemetry
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 # Install .Net installer (requires curl; dotnet requires libicu-dev)
-RUN echo "# Installing dotnet-install..."
-ADD https://dot.net/v1/dotnet-install.sh /usr/local/bin/dotnet-install.sh
-RUN chmod 755 /usr/local/bin/dotnet-install.sh
-# Setup .Net shared installation directory
-RUN mkdir -p ${DOTNET_ROOT} \
+RUN echo "# Installing dotnet-install..." \
+    && curl -o /usr/local/bin/dotnet-install.sh -sSL https://dot.net/v1/dotnet-install.sh \
+    && chmod 755 /usr/local/bin/dotnet-install.sh \
+    #
+    # Setup .Net shared installation directory
+    && mkdir -p ${DOTNET_ROOT} \
     #
     # Assign group folder ownership
     && chgrp -R ${GROUP_NAME} ${DOTNET_ROOT} \
@@ -262,26 +246,23 @@ RUN mkdir -p ${DOTNET_ROOT} \
     && chmod -R 2775 ${DOTNET_ROOT} \
     #
     # Configure .Net for the non-root user
-    && printf "\nPATH=\$PATH:\$DOTNET_ROOT\n" >> /home/${USER_NAME}/.bashrc
-# Add dotnet bash completion
-RUN echo "# Installing dotnet autocomplete..."
-ADD https://github.com/dotnet/cli/raw/master/scripts/register-completions.bash /usr/share/bash-completion/completions/dotnet
-RUN chmod 644 /usr/share/bash-completion/completions/dotnet
+    && printf "\nPATH=\$PATH:\$DOTNET_ROOT\n" >> /home/${USER_NAME}/.bashrc \
+    #
+    # Add dotnet bash completion
+    && echo "# Installing dotnet autocomplete..." \
+    && curl -o /usr/share/bash-completion/completions/dotnet -sSL https://github.com/dotnet/cli/raw/master/scripts/register-completions.bash \
+    && chmod 644 /usr/share/bash-completion/completions/dotnet
 
 # Install git-lfs
-RUN echo "# Installing git-lfs..."
-ADD https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh /tmp/git-lfs-repos.sh
-# Setup git-lfs repos
-RUN /bin/bash -i /tmp/git-lfs-repos.sh \
+RUN echo "# Installing git-lfs..." \
+    && curl -o /tmp/git-lfs-repos.sh -sSL https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh \
+    #
+    # Setup git-lfs repos
+    && /bin/bash -i /tmp/git-lfs-repos.sh \
     && rm /tmp/git-lfs-repos.sh \
     #
     # Install git-lfs
     && apt-get -y install --no-install-recommends git-lfs 2>&1
-
-# Install other usefull software and libraries
-RUN echo "# Installing libxtst6, procps, lsb-release, openssh-client, p7zip-full, p7zip-rar and unrar..." \ 
-    && apt-get -y install --no-install-recommends libxtst6 procps lsb-release openssh-client p7zip-full p7zip-rar unrar 2>&1 \
-    && if [ "$TARGETARCH" = "amd64" ]; then echo "# Installing rar..."; apt-get -y install --no-install-recommends rar 2>&1; fi
 
 # Clean up apt
 RUN apt-get autoremove -y \
