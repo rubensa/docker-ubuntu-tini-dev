@@ -1,6 +1,6 @@
 # Docker image with development tools
 
-This is a Docker image based on [rubensa/ubuntu-tini-user](https://github.com/rubensa/docker-ubuntu-tini-user) and includes various development tools.
+This is a Docker image based on [rubensa/ubuntu-tini-user](https://github.com/rubensa/docker-ubuntu-tini-user) and includes various development tools.  This image includes [old openssl](https://www.openssl.org/source/old/) version builds from [rubensa/ubuntu-openssl-old](https://github.com/rubensa/docker-ubuntu-openssl-old) to allow old Ruby versions to be installed.
 
 ## Building
 
