@@ -80,7 +80,9 @@ RUN echo "# Installing sdkman..." \
     && chgrp -R ${GROUP_NAME} /opt/sdkman \
     #
     # Disable sdkman auto-update prompt
+    && sed -i 's/sdkman_auto_selfupdate=true/sdkman_auto_selfupdate=false/g' /opt/sdkman/etc/config \
     && sed -i 's/sdkman_selfupdate_enable=true/sdkman_selfupdate_enable=false/g' /opt/sdkman/etc/config \
+    && sed -i 's/sdkman_selfupdate_feature=true/sdkman_selfupdate_feature=false/g' /opt/sdkman/etc/config \
     #
     # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
     && chmod -R 2775 /opt/sdkman \
