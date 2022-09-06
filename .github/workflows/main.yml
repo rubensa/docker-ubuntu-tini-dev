@@ -15,6 +15,7 @@ jobs:
   build:
     uses: rubensa/docker-ubuntu-tini/.github/workflows/docker-build.yml@master
     with:
+      DOCKER_REPOSITORY_NAME: rubensa
       DOCKER_IMAGE_NAME: ubuntu-tini-dev
       DOCKER_IMAGE_TAG: latest
     secrets: inherit

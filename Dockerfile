@@ -18,8 +18,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies and other usefull software and libraries
 RUN echo "# Installing curl, netcat, unzip, zip, build-essential, git, bison, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev, libmysqlclient-dev, unixodbc-dev, libpq-dev, freetds-dev, libicu-dev, libxtst6, procps, lsb-release, openssh-client, p7zip-full, p7zip-rar and unrar..." \
-    && apt-get -y install --no-install-recommends curl netcat unzip zip build-essential git bison libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev libmysqlclient-dev unixodbc-dev libpq-dev freetds-dev libicu-dev libxtst6 procps lsb-release openssh-client p7zip-full p7zip-rar unrar 2>&1 \
-    && if [ "$TARGETARCH" = "amd64" ]; then echo "# Installing rar..."; apt-get -y install --no-install-recommends rar 2>&1; fi
+  && apt-get -y install --no-install-recommends curl netcat unzip zip build-essential git bison libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev libmysqlclient-dev unixodbc-dev libpq-dev freetds-dev libicu-dev libxtst6 procps lsb-release openssh-client p7zip-full p7zip-rar unrar 2>&1 \
+  && if [ "$TARGETARCH" = "amd64" ]; then echo "# Installing rar..."; apt-get -y install --no-install-recommends rar 2>&1; fi
 
 # Miniconda Version (https://repo.anaconda.com/miniconda/)
 ARG MINICONDA_VERSION=py39_4.12.0
@@ -27,124 +27,124 @@ ARG MINICONDA_VERSION=py39_4.12.0
 ARG CONDA_BASHCOMPLETION_VERSION=1.6
 # Add conda
 RUN echo "# Installing conda..." \
-    && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
-    && curl -o /tmp/miniconda.sh -sSL https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-${TARGET}.sh \
-    # See https://github.com/ContinuumIO/anaconda-issues/issues/11148
-    && mkdir ~/.conda \
-    && /bin/bash -i /tmp/miniconda.sh -b -p /opt/conda \
-    && rm /tmp/miniconda.sh \
-    #
-    # Assign group folder ownership
-    && echo "# Configuring conda for '${GROUP_NAME}'..." \
-    && chgrp -R ${GROUP_NAME} /opt/conda \
-    #
-    # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
-    && chmod -R 2775 /opt/conda \
-    #
-    # Configure conda for the non-root user
-    && echo "# Configuring conda for '${USER_NAME}'..." \
-    && printf "\n. /opt/conda/etc/profile.d/conda.sh\n" >> /home/${USER_NAME}/.bashrc \
-    #
-    # Use shared folder for packages and environments
-    && printf "envs_dirs:\n  - /opt/conda/envs\npkgs_dirs:\n   - /opt/conda/pkgs\n" >> /home/${USER_NAME}/.condarc \
-    && chown ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/.condarc \
-    #
-    # See https://github.com/ContinuumIO/anaconda-issues/issues/11148
-    && mkdir /home/${USER_NAME}/.conda \
-    && chown ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/.conda \
-    #
-    # Add conda bash completion
-    && echo "# Installing conda autocomplete..." \
-    && curl -o /tmp/conda-bash-completion.tar.gz -sSL https://github.com/tartansandal/conda-bash-completion/archive/refs/tags/${CONDA_BASHCOMPLETION_VERSION}.tar.gz \
-    && tar xvfz /tmp/conda-bash-completion.tar.gz --directory /tmp \
-    && rm /tmp/conda-bash-completion.tar.gz \
-    && cp /tmp/conda-bash-completion-${CONDA_BASHCOMPLETION_VERSION}/conda /usr/share/bash-completion/completions/conda \
-    && rm -rf /tmp/conda-bash-completion-${CONDA_BASHCOMPLETION_VERSION}
+  && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
+  && curl -o /tmp/miniconda.sh -sSL https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-${TARGET}.sh \
+  # See https://github.com/ContinuumIO/anaconda-issues/issues/11148
+  && mkdir ~/.conda \
+  && /bin/bash -i /tmp/miniconda.sh -b -p /opt/conda \
+  && rm /tmp/miniconda.sh \
+  #
+  # Assign group folder ownership
+  && echo "# Configuring conda for '${GROUP_NAME}'..." \
+  && chgrp -R ${GROUP_NAME} /opt/conda \
+  #
+  # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
+  && chmod -R 2775 /opt/conda \
+  #
+  # Configure conda for the non-root user
+  && echo "# Configuring conda for '${USER_NAME}'..." \
+  && printf "\n. /opt/conda/etc/profile.d/conda.sh\n" >> /home/${USER_NAME}/.bashrc \
+  #
+  # Use shared folder for packages and environments
+  && printf "envs_dirs:\n  - /opt/conda/envs\npkgs_dirs:\n   - /opt/conda/pkgs\n" >> /home/${USER_NAME}/.condarc \
+  && chown ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/.condarc \
+  #
+  # See https://github.com/ContinuumIO/anaconda-issues/issues/11148
+  && mkdir /home/${USER_NAME}/.conda \
+  && chown ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/.conda \
+  #
+  # Add conda bash completion
+  && echo "# Installing conda autocomplete..." \
+  && curl -o /tmp/conda-bash-completion.tar.gz -sSL https://github.com/tartansandal/conda-bash-completion/archive/refs/tags/${CONDA_BASHCOMPLETION_VERSION}.tar.gz \
+  && tar xvfz /tmp/conda-bash-completion.tar.gz --directory /tmp \
+  && rm /tmp/conda-bash-completion.tar.gz \
+  && cp /tmp/conda-bash-completion-${CONDA_BASHCOMPLETION_VERSION}/conda /usr/share/bash-completion/completions/conda \
+  && rm -rf /tmp/conda-bash-completion-${CONDA_BASHCOMPLETION_VERSION}
 
 # wait-for version to install (https://github.com/eficode/wait-for/releases)
 ARG WAITFOR_VERSION=v2.2.3
 # Install wait-for (requires netcat)
 RUN echo "# Installing wait-for..." \
-    && curl -o /usr/local/bin/wait-for -sSL https://github.com/eficode/wait-for/releases/download/${WAITFOR_VERSION}/wait-for \
-    && chown root:root /usr/local/bin/wait-for \
-    && chmod 755 /usr/local/bin/wait-for
+  && curl -o /usr/local/bin/wait-for -sSL https://github.com/eficode/wait-for/releases/download/${WAITFOR_VERSION}/wait-for \
+  && chown root:root /usr/local/bin/wait-for \
+  && chmod 755 /usr/local/bin/wait-for
 
 # Install sdkman (requires unzip, zip and curl)
 RUN echo "# Installing sdkman..." \
-    && curl -o /tmp/get-sdkman.sh -sSL https://get.sdkman.io  \
-    && export SDKMAN_DIR=/opt/sdkman \
-    && /bin/bash -i /tmp/get-sdkman.sh \
-    && rm /tmp/get-sdkman.sh \
-    #
-    # Assign group folder ownership
-    && chgrp -R ${GROUP_NAME} /opt/sdkman \
-    #
-    # Disable sdkman auto-update prompt
-    && sed -i 's/sdkman_auto_selfupdate=true/sdkman_auto_selfupdate=false/g' /opt/sdkman/etc/config \
-    && sed -i 's/sdkman_selfupdate_enable=true/sdkman_selfupdate_enable=false/g' /opt/sdkman/etc/config \
-    && sed -i 's/sdkman_selfupdate_feature=true/sdkman_selfupdate_feature=false/g' /opt/sdkman/etc/config \
-    #
-    # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
-    && chmod -R 2775 /opt/sdkman \
-    #
-    # Configure sdkman for the non-root user
-    && echo "# Configuring sdkman for '${USER_NAME}'..." \
-    && printf "\nexport SDKMAN_DIR=/opt/sdkman\n. /opt/sdkman/bin/sdkman-init.sh\n" >> /home/${USER_NAME}/.bashrc \
-    #
-    # Add bash completion for maven
-    && echo "# Installing bash completion for maven..." \
-    && curl -o /usr/share/bash-completion/completions/mvn -sSL https://raw.github.com/juven/maven-bash-completion/master/bash_completion.bash \
-    && chmod 644 /usr/share/bash-completion/completions/mvn
+  && curl -o /tmp/get-sdkman.sh -sSL https://get.sdkman.io  \
+  && export SDKMAN_DIR=/opt/sdkman \
+  && /bin/bash -i /tmp/get-sdkman.sh \
+  && rm /tmp/get-sdkman.sh \
+  #
+  # Assign group folder ownership
+  && chgrp -R ${GROUP_NAME} /opt/sdkman \
+  #
+  # Disable sdkman auto-update prompt
+  && sed -i 's/sdkman_auto_selfupdate=true/sdkman_auto_selfupdate=false/g' /opt/sdkman/etc/config \
+  && sed -i 's/sdkman_selfupdate_enable=true/sdkman_selfupdate_enable=false/g' /opt/sdkman/etc/config \
+  && sed -i 's/sdkman_selfupdate_feature=true/sdkman_selfupdate_feature=false/g' /opt/sdkman/etc/config \
+  #
+  # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
+  && chmod -R 2775 /opt/sdkman \
+  #
+  # Configure sdkman for the non-root user
+  && echo "# Configuring sdkman for '${USER_NAME}'..." \
+  && printf "\nexport SDKMAN_DIR=/opt/sdkman\n. /opt/sdkman/bin/sdkman-init.sh\n" >> /home/${USER_NAME}/.bashrc \
+  #
+  # Add bash completion for maven
+  && echo "# Installing bash completion for maven..." \
+  && curl -o /usr/share/bash-completion/completions/mvn -sSL https://raw.github.com/juven/maven-bash-completion/master/bash_completion.bash \
+  && chmod 644 /usr/share/bash-completion/completions/mvn
 
 # Node Version Manager version to install (https://github.com/nvm-sh/nvm/releases)
 ARG NVM_VERSION=v0.39.1
 # Install nvm (requires curl)
 RUN echo "# Installing nvm..." \
-    && curl -o /tmp/nvm.sh -sSL https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh \
-    && mkdir -p /opt/nvm \
-    && export NVM_DIR=/opt/nvm \
-    && /bin/bash -i /tmp/nvm.sh --no-use \
-    && rm /tmp/nvm.sh \
-    #
-    # Create nvm cache directory so it is owned by the group
-    && mkdir -p /opt/nvm/.cache \
-    #
-    # Assign group folder ownership
-    && chgrp -R ${GROUP_NAME} /opt/nvm \
-    #
-    # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
-    && chmod -R 2775 /opt/nvm \
-    #
-    # Configure nvm for the non-root user
-    && echo "# Configuring nvm for '${USER_NAME}'..." \
-    && printf "\n. /opt/nvm/nvm.sh\n" >> /home/${USER_NAME}/.bashrc \
-    #
-    # Configure nvm bash completion for the non root user
-    && echo "# Configuring nvm autocomplete for '${USER_NAME}'..." \
-    && printf "\n. /opt/nvm/bash_completion\n" >> /home/${USER_NAME}/.bashrc
+  && curl -o /tmp/nvm.sh -sSL https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh \
+  && mkdir -p /opt/nvm \
+  && export NVM_DIR=/opt/nvm \
+  && /bin/bash -i /tmp/nvm.sh --no-use \
+  && rm /tmp/nvm.sh \
+  #
+  # Create nvm cache directory so it is owned by the group
+  && mkdir -p /opt/nvm/.cache \
+  #
+  # Assign group folder ownership
+  && chgrp -R ${GROUP_NAME} /opt/nvm \
+  #
+  # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
+  && chmod -R 2775 /opt/nvm \
+  #
+  # Configure nvm for the non-root user
+  && echo "# Configuring nvm for '${USER_NAME}'..." \
+  && printf "\n. /opt/nvm/nvm.sh\n" >> /home/${USER_NAME}/.bashrc \
+  #
+  # Configure nvm bash completion for the non root user
+  && echo "# Configuring nvm autocomplete for '${USER_NAME}'..." \
+  && printf "\n. /opt/nvm/bash_completion\n" >> /home/${USER_NAME}/.bashrc
 
 # Install Go Version Manager (requires git, binutils, bison, gcc, make and curl; go requires build-essential)
 RUN echo "# Installing gvm..." \
-    && curl -o /tmp/gvm-installer.sh -sSL https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer \
-    && /bin/bash -i /tmp/gvm-installer.sh master /opt \
-    && rm /tmp/gvm-installer.sh \
-    #
-    # Create gvm pkgsets directory so it is owned by the group
-    && mkdir -p /opt/gvm/pkgsets \
-    #
-    # Assign group folder ownership
-    && chgrp -R ${GROUP_NAME} /opt/gvm \
-    #
-    # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
-    && chmod -R 2775 /opt/gvm \
-    #
-    # Configure gvm for the non-root user
-    && echo "# Configuring gvm for '${USER_NAME}'..." \
-    && printf "\n. /opt/gvm/scripts/gvm\n" >> /home/${USER_NAME}/.bashrc \
-    #
-    # Configure gvm bash completion for the non root user
-    && echo "# Configuring gvm autocomplete for '${USER_NAME}'..." \
-    && printf "\n. /opt/gvm/scripts/completion\n" >> /home/${USER_NAME}/.bashrc
+  && curl -o /tmp/gvm-installer.sh -sSL https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer \
+  && /bin/bash -i /tmp/gvm-installer.sh master /opt \
+  && rm /tmp/gvm-installer.sh \
+  #
+  # Create gvm pkgsets directory so it is owned by the group
+  && mkdir -p /opt/gvm/pkgsets \
+  #
+  # Assign group folder ownership
+  && chgrp -R ${GROUP_NAME} /opt/gvm \
+  #
+  # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
+  && chmod -R 2775 /opt/gvm \
+  #
+  # Configure gvm for the non-root user
+  && echo "# Configuring gvm for '${USER_NAME}'..." \
+  && printf "\n. /opt/gvm/scripts/gvm\n" >> /home/${USER_NAME}/.bashrc \
+  #
+  # Configure gvm bash completion for the non root user
+  && echo "# Configuring gvm autocomplete for '${USER_NAME}'..." \
+  && printf "\n. /opt/gvm/scripts/completion\n" >> /home/${USER_NAME}/.bashrc
 
 # rbenv version to install (https://github.com/rbenv/rbenv/releases)
 ARG RBENV_VERSION=1.2.0
@@ -154,67 +154,67 @@ ARG RUBY_BUILD_VERSION=20220426
 ENV RBENV_ROOT=/opt/rbenv
 # Install Ruby Environment Manager (requires curl, autoconf, bison, build-essential, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev)
 RUN echo "# Installing rbenv (with ruby-build)..." \
-    && curl -o /tmp/rbenv-${RBENV_VERSION}.tar.gz -sSL https://github.com/rbenv/rbenv/archive/refs/tags/v${RBENV_VERSION}.tar.gz \
-    && curl -o /tmp/ruby-build-${RUBY_BUILD_VERSION}.tar.gz -sSL https://github.com/rbenv/ruby-build/archive/refs/tags/v${RUBY_BUILD_VERSION}.tar.gz \
-    #
-    # Create installation folders
-    && mkdir -p ${RBENV_ROOT}/plugins/ruby-build \
-    #
-    # Create sources cache directory
-    && mkdir -p ${RBENV_ROOT}/cache \
-    #
-    # Create installed versions directory
-    && mkdir -p ${RBENV_ROOT}/versions \
-    #
-    # Install rbenv
-    && tar xzf /tmp/rbenv-${RBENV_VERSION}.tar.gz -C ${RBENV_ROOT} --strip-components=1 \
-    #
-    # Compile dynamic bash extension to speed up rbenv
-    && cd ${RBENV_ROOT} && src/configure && make -C src \
-    #
-    # Install ruby-build
-    && tar xzf /tmp/ruby-build-${RUBY_BUILD_VERSION}.tar.gz -C ${RBENV_ROOT}/plugins/ruby-build --strip-components=1 \
-    #
-    # Assign group folder ownership
-    && chgrp -R ${GROUP_NAME} ${RBENV_ROOT} \
-    #
-    # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
-    && chmod -R 2775 ${RBENV_ROOT} \
-    #
-    # Cleanup
-    && rm /tmp/rbenv-${RBENV_VERSION}.tar.gz \
-    && rm /tmp/ruby-build-${RUBY_BUILD_VERSION}.tar.gz \
-    #
-    # Configure rbenv for the non-root user
-    && echo "# Configuring rbenv for '${USER_NAME}'..." \
-    && printf "\nPATH=${RBENV_ROOT}/bin:\$PATH\neval \"\$(rbenv init -)\"\n" >> /home/${USER_NAME}/.bashrc \
-    #
-    # Add bash completion for Ruby-related commands
-    && echo "# Installing bash completion for Ruby-related commands (bundle, gem, jruby, rails, rake, ruby)..." \
-    && curl -o /usr/share/bash-completion/completions/bundle -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-bundle \
-    && curl -o /usr/share/bash-completion/completions/gem -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-gem \
-    && curl -o /usr/share/bash-completion/completions/jruby -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-jruby \
-    && curl -o /usr/share/bash-completion/completions/rails -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rails \
-    && curl -o /usr/share/bash-completion/completions/rake -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rake \
-    && curl -o /usr/share/bash-completion/completions/ruby -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-ruby \
-    && chmod 644 /usr/share/bash-completion/completions/bundle \
-    && chmod 644 /usr/share/bash-completion/completions/gem \
-    && chmod 644 /usr/share/bash-completion/completions/jruby \
-    && chmod 644 /usr/share/bash-completion/completions/rails \
-    && chmod 644 /usr/share/bash-completion/completions/rake \
-    && chmod 644 /usr/share/bash-completion/completions/ruby
+  && curl -o /tmp/rbenv-${RBENV_VERSION}.tar.gz -sSL https://github.com/rbenv/rbenv/archive/refs/tags/v${RBENV_VERSION}.tar.gz \
+  && curl -o /tmp/ruby-build-${RUBY_BUILD_VERSION}.tar.gz -sSL https://github.com/rbenv/ruby-build/archive/refs/tags/v${RUBY_BUILD_VERSION}.tar.gz \
+  #
+  # Create installation folders
+  && mkdir -p ${RBENV_ROOT}/plugins/ruby-build \
+  #
+  # Create sources cache directory
+  && mkdir -p ${RBENV_ROOT}/cache \
+  #
+  # Create installed versions directory
+  && mkdir -p ${RBENV_ROOT}/versions \
+  #
+  # Install rbenv
+  && tar xzf /tmp/rbenv-${RBENV_VERSION}.tar.gz -C ${RBENV_ROOT} --strip-components=1 \
+  #
+  # Compile dynamic bash extension to speed up rbenv
+  && cd ${RBENV_ROOT} && src/configure && make -C src \
+  #
+  # Install ruby-build
+  && tar xzf /tmp/ruby-build-${RUBY_BUILD_VERSION}.tar.gz -C ${RBENV_ROOT}/plugins/ruby-build --strip-components=1 \
+  #
+  # Assign group folder ownership
+  && chgrp -R ${GROUP_NAME} ${RBENV_ROOT} \
+  #
+  # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
+  && chmod -R 2775 ${RBENV_ROOT} \
+  #
+  # Cleanup
+  && rm /tmp/rbenv-${RBENV_VERSION}.tar.gz \
+  && rm /tmp/ruby-build-${RUBY_BUILD_VERSION}.tar.gz \
+  #
+  # Configure rbenv for the non-root user
+  && echo "# Configuring rbenv for '${USER_NAME}'..." \
+  && printf "\nPATH=${RBENV_ROOT}/bin:\$PATH\neval \"\$(rbenv init -)\"\n" >> /home/${USER_NAME}/.bashrc \
+  #
+  # Add bash completion for Ruby-related commands
+  && echo "# Installing bash completion for Ruby-related commands (bundle, gem, jruby, rails, rake, ruby)..." \
+  && curl -o /usr/share/bash-completion/completions/bundle -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-bundle \
+  && curl -o /usr/share/bash-completion/completions/gem -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-gem \
+  && curl -o /usr/share/bash-completion/completions/jruby -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-jruby \
+  && curl -o /usr/share/bash-completion/completions/rails -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rails \
+  && curl -o /usr/share/bash-completion/completions/rake -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rake \
+  && curl -o /usr/share/bash-completion/completions/ruby -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-ruby \
+  && chmod 644 /usr/share/bash-completion/completions/bundle \
+  && chmod 644 /usr/share/bash-completion/completions/gem \
+  && chmod 644 /usr/share/bash-completion/completions/jruby \
+  && chmod 644 /usr/share/bash-completion/completions/rails \
+  && chmod 644 /usr/share/bash-completion/completions/rake \
+  && chmod 644 /usr/share/bash-completion/completions/ruby
 
-# Ubuntu 18.04 comes with OpenSSL 1.1 and Ruby versions earlier than 2.4 used OpenSSL 1.0
+# Ubuntu 22.04 comes with OpenSSL 3.0 and Ruby versions earlier than 2.4 used OpenSSL 1.0
 # openssl installation directory
 ENV OPENSSL_ROOT_1_0=/opt/openssl-1.0
 COPY --from=rubensa/ubuntu-openssl-old ${OPENSSL_ROOT_1_0} ${OPENSSL_ROOT_1_0}
 # Install OpenSSL 1.0
 RUN echo "# Installing OpenSSL 1.0..." \
-    #
-    # Link the system's certs to OpenSSL directory
-    && rm -rf ${OPENSSL_ROOT_1_0}/certs \
-    && ln -s /etc/ssl/certs ${OPENSSL_ROOT_1_0}
-    # Use RUBY_CONFIGURE_OPTS=--with-openssl-dir=${OPENSSL_ROOT_1_0} before the command to install the ruby version < 2.4
+  #
+  # Link the system's certs to OpenSSL directory
+  && rm -rf ${OPENSSL_ROOT_1_0}/certs \
+  && ln -s /etc/ssl/certs ${OPENSSL_ROOT_1_0}
+# Use RUBY_CONFIGURE_OPTS=--with-openssl-dir=${OPENSSL_ROOT_1_0} before the command to install the ruby version < 2.4
 
 # Ubuntu 22.04 comes with OpenSSL 3.0 and Ruby versions earlier than 3.1 used OpenSSL 1.1
 # openssl installation directory
@@ -222,10 +222,10 @@ ENV OPENSSL_ROOT_1_1=/opt/openssl-1.1
 COPY --from=rubensa/ubuntu-openssl-old ${OPENSSL_ROOT_1_1} ${OPENSSL_ROOT_1_1}
 # Install OpenSSL 1.1
 RUN echo "# Installing OpenSSL 1.1..." \
-    # Link the system's certs to OpenSSL directory
-    && rm -rf ${OPENSSL_ROOT_1_1}/certs \
-    && ln -s /etc/ssl/certs ${OPENSSL_ROOT_1_1}
-    # Use RUBY_CONFIGURE_OPTS=--with-openssl-dir=${OPENSSL_ROOT_1_1} before the command to install the ruby version < 3.1
+  # Link the system's certs to OpenSSL directory
+  && rm -rf ${OPENSSL_ROOT_1_1}/certs \
+  && ln -s /etc/ssl/certs ${OPENSSL_ROOT_1_1}
+# Use RUBY_CONFIGURE_OPTS=--with-openssl-dir=${OPENSSL_ROOT_1_1} before the command to install the ruby version < 3.1
 
 # .Net installer version (https://docs.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#scripted-install)
 ARG DOTNET_INSTALLER_VERSION=v1
@@ -235,41 +235,41 @@ ENV DOTNET_ROOT=/opt/dotnet
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 # Install .Net installer (requires curl; dotnet requires libicu-dev)
 RUN echo "# Installing dotnet-install..." \
-    && curl -o /usr/local/bin/dotnet-install.sh -sSL https://dot.net/v1/dotnet-install.sh \
-    && chmod 755 /usr/local/bin/dotnet-install.sh \
-    #
-    # Setup .Net shared installation directory
-    && mkdir -p ${DOTNET_ROOT} \
-    #
-    # Assign group folder ownership
-    && chgrp -R ${GROUP_NAME} ${DOTNET_ROOT} \
-    #
-    # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
-    && chmod -R 2775 ${DOTNET_ROOT} \
-    #
-    # Configure .Net for the non-root user
-    && printf "\nPATH=\$PATH:\$DOTNET_ROOT\n" >> /home/${USER_NAME}/.bashrc \
-    #
-    # Add dotnet bash completion
-    && echo "# Installing dotnet autocomplete..." \
-    && curl -o /usr/share/bash-completion/completions/dotnet -sSL https://github.com/dotnet/cli/raw/master/scripts/register-completions.bash \
-    && chmod 644 /usr/share/bash-completion/completions/dotnet
+  && curl -o /usr/local/bin/dotnet-install.sh -sSL https://dot.net/v1/dotnet-install.sh \
+  && chmod 755 /usr/local/bin/dotnet-install.sh \
+  #
+  # Setup .Net shared installation directory
+  && mkdir -p ${DOTNET_ROOT} \
+  #
+  # Assign group folder ownership
+  && chgrp -R ${GROUP_NAME} ${DOTNET_ROOT} \
+  #
+  # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
+  && chmod -R 2775 ${DOTNET_ROOT} \
+  #
+  # Configure .Net for the non-root user
+  && printf "\nPATH=\$PATH:\$DOTNET_ROOT\n" >> /home/${USER_NAME}/.bashrc \
+  #
+  # Add dotnet bash completion
+  && echo "# Installing dotnet autocomplete..." \
+  && curl -o /usr/share/bash-completion/completions/dotnet -sSL https://github.com/dotnet/cli/raw/master/scripts/register-completions.bash \
+  && chmod 644 /usr/share/bash-completion/completions/dotnet
 
 # Install git-lfs
 RUN echo "# Installing git-lfs..." \
-    && curl -o /tmp/git-lfs-repos.sh -sSL https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh \
-    #
-    # Setup git-lfs repos
-    && /bin/bash -i /tmp/git-lfs-repos.sh \
-    && rm /tmp/git-lfs-repos.sh \
-    #
-    # Install git-lfs
-    && apt-get -y install --no-install-recommends git-lfs 2>&1
+  && curl -o /tmp/git-lfs-repos.sh -sSL https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh \
+  #
+  # Setup git-lfs repos
+  && /bin/bash -i /tmp/git-lfs-repos.sh \
+  && rm /tmp/git-lfs-repos.sh \
+  #
+  # Install git-lfs
+  && apt-get -y install --no-install-recommends git-lfs 2>&1
 
 # Clean up apt
 RUN apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
+  && apt-get clean -y \
+  && rm -rf /var/lib/apt/lists/*
 
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=

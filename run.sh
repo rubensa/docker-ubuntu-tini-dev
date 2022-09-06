@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+DOCKER_REPOSITORY_NAME="rubensa"
+DOCKER_IMAGE_NAME="ubuntu-tini-dev"
+DOCKER_IMAGE_TAG="latest"
+
 # Get current user UID
 USER_ID=$(id -u)
 # Get current user main GID
@@ -23,8 +27,8 @@ prepare_docker_user_and_group
 prepare_docker_from_docker
 
 docker run --rm -it \
-  --name "ubuntu-tini-dev" \
+  --name "${DOCKER_IMAGE_NAME}" \
   ${ENV_VARS} \
   ${MOUNTS} \
   ${RUNNER} \
-  rubensa/ubuntu-tini-dev "$@"
+  "${DOCKER_REPOSITORY_NAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" "$@"

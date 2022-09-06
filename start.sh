@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 
+DOCKER_IMAGE_NAME="ubuntu-tini-dev"
+
 docker start \
-  ubuntu-tini-dev
+  "${DOCKER_IMAGE_NAME}"

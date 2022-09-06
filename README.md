@@ -9,14 +9,18 @@ You can build the image like this:
 ```
 #!/usr/bin/env bash
 
+DOCKER_REPOSITORY_NAME="rubensa"
+DOCKER_IMAGE_NAME="ubuntu-tini-dev"
+DOCKER_IMAGE_TAG="latest"
+
 docker buildx build --platform=linux/amd64,linux/arm64 --no-cache \
-  -t "rubensa/ubuntu-tini-dev" \
+  -t "${DOCKER_REPOSITORY_NAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" \
   --label "maintainer=Ruben Suarez <rubensa@gmail.com>" \
   .
 
 docker buildx build --load \
-	-t "rubensa/ubuntu-tini-dev" \
-	.
+  -t "${DOCKER_REPOSITORY_NAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" \
+  .
 ```
 
 ## Running
@@ -25,6 +29,10 @@ You can run the container like this (change --rm with -d if you don't want the c
 
 ```
 #!/usr/bin/env bash
+
+DOCKER_REPOSITORY_NAME="rubensa"
+DOCKER_IMAGE_NAME="ubuntu-tini-dev"
+DOCKER_IMAGE_TAG="latest"
 
 # Get current user UID
 USER_ID=$(id -u)
@@ -49,11 +57,11 @@ prepare_docker_user_and_group
 prepare_docker_from_docker
 
 docker run --rm -it \
-  --name "ubuntu-tini-dev" \
+  --name "${DOCKER_IMAGE_NAME}" \
   ${ENV_VARS} \
   ${MOUNTS} \
   ${RUNNER} \
-  rubensa/ubuntu-tini-dev "$@"
+  "${DOCKER_REPOSITORY_NAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" "$@"
 ```
 
 *NOTE*: Mounting /var/run/docker.sock allows host docker usage inside the container (docker-from-docker).
@@ -67,8 +75,10 @@ You can connect to the running container like this:
 ```
 #!/usr/bin/env bash
 
+DOCKER_IMAGE_NAME="ubuntu-tini-dev"
+
 docker exec -it \
-  ubuntu-tini-dev \
+  "${DOCKER_IMAGE_NAME}" \
   bash -l
 ```
 
@@ -96,8 +106,10 @@ You can stop the running container like this:
 ```
 #!/usr/bin/env bash
 
-docker stop \
-  ubuntu-tini-dev
+DOCKER_IMAGE_NAME="ubuntu-tini-dev"
+
+docker stop  \
+  "${DOCKER_IMAGE_NAME}"
 ```
 
 ## Start
@@ -107,8 +119,10 @@ If you run the container without --rm you can start it again like this:
 ```
 #!/usr/bin/env bash
 
+DOCKER_IMAGE_NAME="ubuntu-tini-dev"
+
 docker start \
-  ubuntu-tini-dev
+  "${DOCKER_IMAGE_NAME}"
 ```
 
 ## Remove
@@ -118,6 +132,8 @@ If you run the container without --rm you can remove once stopped like this:
 ```
 #!/usr/bin/env bash
 
+DOCKER_IMAGE_NAME="ubuntu-tini-dev"
+
 docker rm \
-  ubuntu-tini-dev
+  "${DOCKER_IMAGE_NAME}"
 ```
