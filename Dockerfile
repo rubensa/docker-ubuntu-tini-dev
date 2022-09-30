@@ -24,7 +24,7 @@ RUN echo "# Installing curl, netcat, unzip, zip, build-essential, git, bison, li
 # Miniconda Version (https://repo.anaconda.com/miniconda/)
 ARG MINICONDA_VERSION=py39_4.12.0
 # Bash completion support for the conda command (https://github.com/tartansandal/conda-bash-completion/releases)
-ARG CONDA_BASHCOMPLETION_VERSION=1.6
+ARG CONDA_BASHCOMPLETION_VERSION=1.7
 # Add conda
 RUN echo "# Installing conda..." \
   && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
@@ -149,7 +149,7 @@ RUN echo "# Installing gvm..." \
 # rbenv version to install (https://github.com/rbenv/rbenv/releases)
 ARG RBENV_VERSION=1.2.0
 # ruby-build version to install (https://github.com/rbenv/ruby-build/releases)
-ARG RUBY_BUILD_VERSION=20220426
+ARG RUBY_BUILD_VERSION=20220910.1
 # rbenv installation directory
 ENV RBENV_ROOT=/opt/rbenv
 # Install Ruby Environment Manager (requires curl, autoconf, bison, build-essential, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev)
