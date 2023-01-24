@@ -22,7 +22,7 @@ RUN echo "# Installing curl, netcat, unzip, zip, build-essential, git, bison, li
   && if [ "$TARGETARCH" = "amd64" ]; then echo "# Installing rar..."; apt-get -y install --no-install-recommends rar 2>&1; fi
 
 # Miniconda Version (https://repo.anaconda.com/miniconda/)
-ARG MINICONDA_VERSION=py39_4.12.0
+ARG MINICONDA_VERSION=py39_22.11.1-1
 # Bash completion support for the conda command (https://github.com/tartansandal/conda-bash-completion/releases)
 ARG CONDA_BASHCOMPLETION_VERSION=1.7
 # Add conda
@@ -62,7 +62,7 @@ RUN echo "# Installing conda..." \
   && rm -rf /tmp/conda-bash-completion-${CONDA_BASHCOMPLETION_VERSION}
 
 # wait-for version to install (https://github.com/eficode/wait-for/releases)
-ARG WAITFOR_VERSION=v2.2.3
+ARG WAITFOR_VERSION=v2.2.4
 # Install wait-for (requires netcat)
 RUN echo "# Installing wait-for..." \
   && curl -o /usr/local/bin/wait-for -sSL https://github.com/eficode/wait-for/releases/download/${WAITFOR_VERSION}/wait-for \
@@ -97,7 +97,7 @@ RUN echo "# Installing sdkman..." \
   && chmod 644 /usr/share/bash-completion/completions/mvn
 
 # Node Version Manager version to install (https://github.com/nvm-sh/nvm/releases)
-ARG NVM_VERSION=v0.39.2
+ARG NVM_VERSION=v0.39.3
 # Install nvm (requires curl)
 RUN echo "# Installing nvm..." \
   && curl -o /tmp/nvm.sh -sSL https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh \
@@ -149,7 +149,7 @@ RUN echo "# Installing gvm..." \
 # rbenv version to install (https://github.com/rbenv/rbenv/releases)
 ARG RBENV_VERSION=1.2.0
 # ruby-build version to install (https://github.com/rbenv/ruby-build/releases)
-ARG RUBY_BUILD_VERSION=20221206
+ARG RUBY_BUILD_VERSION=20221225
 # rbenv installation directory
 ENV RBENV_ROOT=/opt/rbenv
 # Install Ruby Environment Manager (requires curl, autoconf, bison, build-essential, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev)
