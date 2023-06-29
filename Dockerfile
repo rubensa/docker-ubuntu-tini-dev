@@ -63,7 +63,7 @@ RUN echo "# Installing socat..." \
   && apt-get -y install --no-install-recommends socat 2>&1
 
 # Miniconda Version (https://repo.anaconda.com/miniconda/)
-ARG MINICONDA_VERSION=py39_23.1.0-1
+ARG MINICONDA_VERSION=py39_23.3.1-0
 # Bash completion support for the conda command (https://github.com/tartansandal/conda-bash-completion/releases)
 ARG CONDA_BASHCOMPLETION_VERSION=1.7
 # Add conda
@@ -190,7 +190,7 @@ RUN echo "# Installing gvm..." \
 # rbenv version to install (https://github.com/rbenv/rbenv/releases)
 ARG RBENV_VERSION=1.2.0
 # ruby-build version to install (https://github.com/rbenv/ruby-build/releases)
-ARG RUBY_BUILD_VERSION=20230330
+ARG RUBY_BUILD_VERSION=20230615
 # rbenv installation directory
 ENV RBENV_ROOT=/opt/rbenv
 # Install Ruby Environment Manager (requires curl, autoconf, bison, build-essential, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev)
