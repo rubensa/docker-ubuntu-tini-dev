@@ -1,2 +1,5 @@
 # Ignore everything
 **
+
+# Exceptions
+!docker-from-docker-init.sh

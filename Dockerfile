@@ -21,6 +21,47 @@ RUN echo "# Installing curl, netcat, unzip, zip, build-essential, git, bison, li
   && apt-get -y install --no-install-recommends curl netcat unzip zip build-essential git bison libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev libmysqlclient-dev unixodbc-dev libpq-dev freetds-dev libicu-dev libxtst6 procps lsb-release openssh-client p7zip-full p7zip-rar unrar 2>&1 \
   && if [ "$TARGETARCH" = "amd64" ]; then echo "# Installing rar..."; apt-get -y install --no-install-recommends rar 2>&1; fi
 
+# Docker CLI Version (https://download.docker.com/linux/static/stable/)
+ARG DOCKER_VERSION=24.0.2
+# Add docker
+RUN echo "# Installing docker..." \
+  && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
+  && curl -o /tmp/docker.tgz -sSL https://download.docker.com/linux/static/stable/${TARGET}/docker-${DOCKER_VERSION}.tgz \
+  && tar xzvf /tmp/docker.tgz --directory /tmp \
+  && rm /tmp/docker.tgz \
+  && cp /tmp/docker/* /usr/local/bin/ \
+  && rm -rf /tmp/docker
+# Add docker bash completion
+ADD https://raw.githubusercontent.com/docker/docker-ce/master/components/cli/contrib/completion/bash/docker /usr/share/bash-completion/completions/docker
+RUN echo "# Installing docker autocomplete..." \
+  #
+  # Configure docker bash completion
+  && chmod 644 /usr/share/bash-completion/completions/docker
+
+# Docker Compose (https://github.com/docker/compose/releases/)
+ARG DOCKERCOMPOSE_VERSION=2.19.0
+# Install Docker Compose
+RUN echo "# Installing docker-compose..." \
+  && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
+  && mkdir -p /usr/local/lib/docker/cli-plugins \
+  && curl -o /usr/local/lib/docker/cli-plugins/docker-compose -sSL https://github.com/docker/compose/releases/download/v${DOCKERCOMPOSE_VERSION}/docker-compose-linux-${TARGET} \
+  && chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+
+# Default to root only access to the Docker socket, set up docker-from-docker-init.sh for non-root access
+RUN touch /var/run/docker-host.sock \
+  && ln -s /var/run/docker-host.sock /var/run/docker.sock
+
+# Add script to allow docker-from-docker
+ADD docker-from-docker-init.sh /sbin/docker-from-docker-init.sh
+RUN echo "# Allow docker-from-docker configuration for the non-root user..." \
+  #
+  # Enable docker-from-docker init script
+  && chmod +x /sbin/docker-from-docker-init.sh
+
+# Install socat (to allow docker-from-docker)
+RUN echo "# Installing socat..." \ 
+  && apt-get -y install --no-install-recommends socat 2>&1
+
 # Miniconda Version (https://repo.anaconda.com/miniconda/)
 ARG MINICONDA_VERSION=py39_23.1.0-1
 # Bash completion support for the conda command (https://github.com/tartansandal/conda-bash-completion/releases)
