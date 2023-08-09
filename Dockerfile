@@ -164,10 +164,12 @@ RUN echo "# Installing nvm..." \
   && echo "# Configuring nvm autocomplete for '${USER_NAME}'..." \
   && printf "\n. /opt/nvm/bash_completion\n" >> /home/${USER_NAME}/.bashrc
 
+# Go Version Manager version to install (https://github.com/moovweb/gvm/tags)
+ARG GVM_VERSION=1.0.22
 # Install Go Version Manager (requires git, binutils, bison, gcc, make, curl and bsdmainutils; go requires build-essential)
 RUN echo "# Installing gvm..." \
-  && curl -o /tmp/gvm-installer.sh -sSL https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer \
-  && /bin/bash -i /tmp/gvm-installer.sh master /opt \
+  && curl -o /tmp/gvm-installer.sh -sSL https://raw.githubusercontent.com/moovweb/gvm/${GVM_VERSION}/binscripts/gvm-installer \
+  && /bin/bash -i /tmp/gvm-installer.sh ${GVM_VERSION} /opt \
   && rm /tmp/gvm-installer.sh \
   #
   # Create gvm pkgsets directory so it is owned by the group
