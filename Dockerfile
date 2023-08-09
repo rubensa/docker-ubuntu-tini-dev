@@ -17,8 +17,8 @@ RUN apt-get update
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies and other usefull software and libraries
-RUN echo "# Installing curl, netcat, unzip, zip, build-essential, git, bison, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev, libmysqlclient-dev, unixodbc-dev, libpq-dev, freetds-dev, libicu-dev, libxtst6, procps, lsb-release, openssh-client, p7zip-full, p7zip-rar, unrar and jq..." \
-  && apt-get -y install --no-install-recommends curl netcat unzip zip build-essential git bison libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev libmysqlclient-dev unixodbc-dev libpq-dev freetds-dev libicu-dev libxtst6 procps lsb-release openssh-client p7zip-full p7zip-rar unrar jq 2>&1 \
+RUN echo "# Installing curl, netcat, unzip, zip, build-essential, git, bison, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev, libmysqlclient-dev, unixodbc-dev, libpq-dev, freetds-dev, libicu-dev, libxtst6, procps, lsb-release, openssh-client, p7zip-full, p7zip-rar, unrar, jq and bsdmainutils..." \
+  && apt-get -y install --no-install-recommends curl netcat unzip zip build-essential git bison libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev libmysqlclient-dev unixodbc-dev libpq-dev freetds-dev libicu-dev libxtst6 procps lsb-release openssh-client p7zip-full p7zip-rar unrar jq bsdmainutils 2>&1 \
   && if [ "$TARGETARCH" = "amd64" ]; then echo "# Installing rar..."; apt-get -y install --no-install-recommends rar 2>&1; fi
 
 # Docker CLI Version (https://download.docker.com/linux/static/stable/)
@@ -164,7 +164,7 @@ RUN echo "# Installing nvm..." \
   && echo "# Configuring nvm autocomplete for '${USER_NAME}'..." \
   && printf "\n. /opt/nvm/bash_completion\n" >> /home/${USER_NAME}/.bashrc
 
-# Install Go Version Manager (requires git, binutils, bison, gcc, make and curl; go requires build-essential)
+# Install Go Version Manager (requires git, binutils, bison, gcc, make, curl and bsdmainutils; go requires build-essential)
 RUN echo "# Installing gvm..." \
   && curl -o /tmp/gvm-installer.sh -sSL https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer \
   && /bin/bash -i /tmp/gvm-installer.sh master /opt \
