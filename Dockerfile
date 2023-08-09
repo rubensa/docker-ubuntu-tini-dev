@@ -22,7 +22,7 @@ RUN echo "# Installing curl, netcat, unzip, zip, build-essential, git, bison, li
   && if [ "$TARGETARCH" = "amd64" ]; then echo "# Installing rar..."; apt-get -y install --no-install-recommends rar 2>&1; fi
 
 # Docker CLI Version (https://download.docker.com/linux/static/stable/)
-ARG DOCKER_VERSION=24.0.2
+ARG DOCKER_VERSION=24.0.5
 # Add docker
 RUN echo "# Installing docker..." \
   && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
@@ -39,7 +39,7 @@ RUN echo "# Installing docker autocomplete..." \
   && chmod 644 /usr/share/bash-completion/completions/docker
 
 # Docker Compose (https://github.com/docker/compose/releases/)
-ARG DOCKERCOMPOSE_VERSION=2.19.0
+ARG DOCKERCOMPOSE_VERSION=2.20.2
 # Install Docker Compose
 RUN echo "# Installing docker-compose..." \
   && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
@@ -63,7 +63,7 @@ RUN echo "# Installing socat..." \
   && apt-get -y install --no-install-recommends socat 2>&1
 
 # Miniconda Version (https://repo.anaconda.com/miniconda/)
-ARG MINICONDA_VERSION=py39_23.3.1-0
+ARG MINICONDA_VERSION=py39_23.5.2-0
 # Bash completion support for the conda command (https://github.com/tartansandal/conda-bash-completion/releases)
 ARG CONDA_BASHCOMPLETION_VERSION=1.7
 # Add conda
@@ -138,7 +138,7 @@ RUN echo "# Installing sdkman..." \
   && chmod 644 /usr/share/bash-completion/completions/mvn
 
 # Node Version Manager version to install (https://github.com/nvm-sh/nvm/releases)
-ARG NVM_VERSION=v0.39.3
+ARG NVM_VERSION=v0.39.4
 # Install nvm (requires curl)
 RUN echo "# Installing nvm..." \
   && curl -o /tmp/nvm.sh -sSL https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh \
@@ -190,7 +190,7 @@ RUN echo "# Installing gvm..." \
 # rbenv version to install (https://github.com/rbenv/rbenv/releases)
 ARG RBENV_VERSION=1.2.0
 # ruby-build version to install (https://github.com/rbenv/ruby-build/releases)
-ARG RUBY_BUILD_VERSION=20230615
+ARG RUBY_BUILD_VERSION=20230717
 # rbenv installation directory
 ENV RBENV_ROOT=/opt/rbenv
 # Install Ruby Environment Manager (requires curl, autoconf, bison, build-essential, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev)
