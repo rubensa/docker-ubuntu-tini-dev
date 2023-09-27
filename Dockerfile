@@ -322,3 +322,11 @@ USER ${USER_NAME}
 
 # Set user home directory (see: https://github.com/microsoft/vscode-remote-release/issues/852)
 ENV HOME /home/$USER_NAME
+
+# Allways execute tini, fixuid and docker-from-docker-init
+ENTRYPOINT [ "/sbin/tini", "--", "/sbin/fixuid", "/sbin/docker-from-docker-init.sh" ]
+
+# If CMD is defined from the base image, setting ENTRYPOINT will reset CMD to an empty value.
+# In this scenario, CMD must be defined in the current image to have a value.
+# By default execute an interactive shell (executes ~/.bashrc)
+CMD [ "/bin/bash", "-i" ]
