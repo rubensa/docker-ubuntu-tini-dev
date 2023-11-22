@@ -22,7 +22,7 @@ RUN echo "# Installing curl, netcat, unzip, zip, build-essential, git, bison, li
   && if [ "$TARGETARCH" = "amd64" ]; then echo "# Installing rar..."; apt-get -y install --no-install-recommends rar 2>&1; fi
 
 # Docker CLI Version (https://download.docker.com/linux/static/stable/)
-ARG DOCKER_VERSION=24.0.6
+ARG DOCKER_VERSION=24.0.7
 # Add docker
 RUN echo "# Installing docker..." \
   && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
@@ -39,7 +39,7 @@ RUN echo "# Installing docker autocomplete..." \
   && chmod 644 /usr/share/bash-completion/completions/docker
 
 # Docker Compose (https://github.com/docker/compose/releases/)
-ARG DOCKERCOMPOSE_VERSION=2.22.0
+ARG DOCKERCOMPOSE_VERSION=2.23.1
 # Install Docker Compose
 RUN echo "# Installing docker-compose..." \
   && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
@@ -63,7 +63,8 @@ RUN echo "# Installing socat..." \
   && apt-get -y install --no-install-recommends socat 2>&1
 
 # Miniconda Version (https://repo.anaconda.com/miniconda/)
-ARG MINICONDA_VERSION=py39_23.5.2-0
+# Python 3.11 conda 23.10.0 release 1 (https://docs.conda.io/projects/miniconda/en/latest/miniconda-release-notes.html)
+ARG MINICONDA_VERSION=py311_23.10.0-1
 # Bash completion support for the conda command (https://github.com/tartansandal/conda-bash-completion/releases)
 ARG CONDA_BASHCOMPLETION_VERSION=1.7
 # Add conda
@@ -192,7 +193,7 @@ RUN echo "# Installing gvm..." \
 # rbenv version to install (https://github.com/rbenv/rbenv/releases)
 ARG RBENV_VERSION=1.2.0
 # ruby-build version to install (https://github.com/rbenv/ruby-build/releases)
-ARG RUBY_BUILD_VERSION=20230919
+ARG RUBY_BUILD_VERSION=20231114
 # rbenv installation directory
 ENV RBENV_ROOT=/opt/rbenv
 # Install Ruby Environment Manager (requires curl, autoconf, bison, build-essential, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev)
