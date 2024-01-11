@@ -310,6 +310,35 @@ RUN echo "# Installing git-lfs..." \
   # Install git-lfs
   && apt-get -y install --no-install-recommends git-lfs 2>&1
 
+# Install Rust (https://github.com/rust-lang/rust/releases)
+# (requires curl and build-essential as for GNU targets Rust uses gcc for linking, and gcc in turn calls ld)
+# see: https://github.com/rust-lang/rust/issues/71515
+ARG RUST_VERSION=1.74.1
+# Use this path for shared installation
+ENV RUST_ROOT=/opt/rust
+RUN echo "# Installing Rust..." \
+  && curl -o /tmp/rustup-init.sh -sSL https://sh.rustup.rs \
+  #
+  # Setup rustup
+  && RUSTUP_HOME=${RUST_ROOT}/rustup CARGO_HOME=${RUST_ROOT}/cargo /bin/bash -i /tmp/rustup-init.sh -y --default-toolchain=${RUST_VERSION} --profile minimal --no-modify-path \
+  && rm /tmp/rustup-init.sh \
+  #
+  # Assign group folder ownership
+  && chgrp -R ${GROUP_NAME} ${RUST_ROOT} \
+  #
+  # Set the segid bit to the folder and give write and exec acces so any member of group can use it (but not others)
+  && chmod -R 2775 ${RUST_ROOT} \
+  #
+  # Setup rustup completion
+  && ${RUST_ROOT}/cargo/bin/rustup completions bash > /usr/share/bash-completion/completions/rustup \
+  #
+  # Setup cargo completion
+  && ${RUST_ROOT}/cargo/bin/rustup completions bash cargo > /usr/share/bash-completion/completions/cargo \
+  #
+  # Configure Rust for the non-root user
+  && echo "# Configuring Rust for '${USER_NAME}'..." \
+  && printf "\nexport RUSTUP_HOME=$RUST_ROOT/rustup\nPATH=\$PATH:\$RUST_ROOT/cargo/bin\n" >> /home/${USER_NAME}/.bashrc
+
 # Clean up apt
 RUN apt-get autoremove -y \
   && apt-get clean -y \
