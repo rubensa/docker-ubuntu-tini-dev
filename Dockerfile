@@ -39,7 +39,7 @@ RUN echo "# Installing docker autocomplete..." \
   && chmod 644 /usr/share/bash-completion/completions/docker
 
 # Docker Compose (https://github.com/docker/compose/releases/)
-ARG DOCKERCOMPOSE_VERSION=2.23.1
+ARG DOCKERCOMPOSE_VERSION=2.23.3
 # Install Docker Compose
 RUN echo "# Installing docker-compose..." \
   && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
@@ -64,7 +64,7 @@ RUN echo "# Installing socat..." \
 
 # Miniconda Version (https://repo.anaconda.com/miniconda/)
 # Python 3.11 conda 23.10.0 release 1 (https://docs.conda.io/projects/miniconda/en/latest/miniconda-release-notes.html)
-ARG MINICONDA_VERSION=py311_23.10.0-1
+ARG MINICONDA_VERSION=py311_23.11.0-2
 # Bash completion support for the conda command (https://github.com/tartansandal/conda-bash-completion/releases)
 ARG CONDA_BASHCOMPLETION_VERSION=1.7
 # Add conda
@@ -139,7 +139,7 @@ RUN echo "# Installing sdkman..." \
   && chmod 644 /usr/share/bash-completion/completions/mvn
 
 # Node Version Manager version to install (https://github.com/nvm-sh/nvm/releases)
-ARG NVM_VERSION=v0.39.5
+ARG NVM_VERSION=v0.39.7
 # Install nvm (requires curl)
 RUN echo "# Installing nvm..." \
   && curl -o /tmp/nvm.sh -sSL https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh \
@@ -193,7 +193,7 @@ RUN echo "# Installing gvm..." \
 # rbenv version to install (https://github.com/rbenv/rbenv/releases)
 ARG RBENV_VERSION=1.2.0
 # ruby-build version to install (https://github.com/rbenv/ruby-build/releases)
-ARG RUBY_BUILD_VERSION=20231114
+ARG RUBY_BUILD_VERSION=20231225
 # rbenv installation directory
 ENV RBENV_ROOT=/opt/rbenv
 # Install Ruby Environment Manager (requires curl, autoconf, bison, build-essential, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev)
@@ -313,7 +313,7 @@ RUN echo "# Installing git-lfs..." \
 # Install Rust (https://github.com/rust-lang/rust/releases)
 # (requires curl and build-essential as for GNU targets Rust uses gcc for linking, and gcc in turn calls ld)
 # see: https://github.com/rust-lang/rust/issues/71515
-ARG RUST_VERSION=1.74.1
+ARG RUST_VERSION=1.75.0
 # Use this path for shared installation
 ENV RUST_ROOT=/opt/rust
 RUN echo "# Installing Rust..." \
