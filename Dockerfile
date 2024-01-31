@@ -30,12 +30,10 @@ RUN echo "# Installing docker..." \
   && tar xzvf /tmp/docker.tgz --directory /tmp \
   && rm /tmp/docker.tgz \
   && cp /tmp/docker/* /usr/local/bin/ \
-  && rm -rf /tmp/docker
-# Add docker bash completion
-ADD https://raw.githubusercontent.com/docker/docker-ce/master/components/cli/contrib/completion/bash/docker /usr/share/bash-completion/completions/docker
-RUN echo "# Installing docker autocomplete..." \
+  && rm -rf /tmp/docker \
   #
-  # Configure docker bash completion
+  # Setup docker bash completion
+  && docker completion bash > /usr/share/bash-completion/completions/docker \
   && chmod 644 /usr/share/bash-completion/completions/docker
 
 # Docker Compose (https://github.com/docker/compose/releases/)
@@ -101,6 +99,7 @@ RUN echo "# Installing conda..." \
   && tar xvfz /tmp/conda-bash-completion.tar.gz --directory /tmp \
   && rm /tmp/conda-bash-completion.tar.gz \
   && cp /tmp/conda-bash-completion-${CONDA_BASHCOMPLETION_VERSION}/conda /usr/share/bash-completion/completions/conda \
+  && chmod 644 /usr/share/bash-completion/completions/conda \
   && rm -rf /tmp/conda-bash-completion-${CONDA_BASHCOMPLETION_VERSION}
 
 # wait-for version to install (https://github.com/eficode/wait-for/releases)
@@ -236,16 +235,16 @@ RUN echo "# Installing rbenv (with ruby-build)..." \
   # Add bash completion for Ruby-related commands
   && echo "# Installing bash completion for Ruby-related commands (bundle, gem, jruby, rails, rake, ruby)..." \
   && curl -o /usr/share/bash-completion/completions/bundle -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-bundle \
-  && curl -o /usr/share/bash-completion/completions/gem -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-gem \
-  && curl -o /usr/share/bash-completion/completions/jruby -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-jruby \
-  && curl -o /usr/share/bash-completion/completions/rails -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rails \
-  && curl -o /usr/share/bash-completion/completions/rake -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rake \
-  && curl -o /usr/share/bash-completion/completions/ruby -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-ruby \
   && chmod 644 /usr/share/bash-completion/completions/bundle \
+  && curl -o /usr/share/bash-completion/completions/gem -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-gem \
   && chmod 644 /usr/share/bash-completion/completions/gem \
+  && curl -o /usr/share/bash-completion/completions/jruby -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-jruby \
   && chmod 644 /usr/share/bash-completion/completions/jruby \
+  && curl -o /usr/share/bash-completion/completions/rails -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rails \
   && chmod 644 /usr/share/bash-completion/completions/rails \
+  && curl -o /usr/share/bash-completion/completions/rake -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-rake \
   && chmod 644 /usr/share/bash-completion/completions/rake \
+  && curl -o /usr/share/bash-completion/completions/ruby -sSL https://raw.githubusercontent.com/mernen/completion-ruby/main/completion-ruby \
   && chmod 644 /usr/share/bash-completion/completions/ruby
 
 # Ubuntu 22.04 comes with OpenSSL 3.0 and Ruby versions earlier than 2.4 used OpenSSL 1.0
@@ -331,9 +330,11 @@ RUN echo "# Installing Rust..." \
   #
   # Setup rustup completion
   && ${RUST_ROOT}/cargo/bin/rustup completions bash > /usr/share/bash-completion/completions/rustup \
+  && chmod 644 /usr/share/bash-completion/completions/rustup \
   #
   # Setup cargo completion
   && ${RUST_ROOT}/cargo/bin/rustup completions bash cargo > /usr/share/bash-completion/completions/cargo \
+  && chmod 644 /usr/share/bash-completion/completions/cargo \
   #
   # Configure Rust for the non-root user
   && echo "# Configuring Rust for '${USER_NAME}'..." \
