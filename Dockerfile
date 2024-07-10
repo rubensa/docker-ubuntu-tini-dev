@@ -22,7 +22,7 @@ RUN echo "# Installing curl, netcat, unzip, zip, build-essential, git, bison, li
   && if [ "$TARGETARCH" = "amd64" ]; then echo "# Installing rar..."; apt-get -y install --no-install-recommends rar 2>&1; fi
 
 # Docker CLI Version (https://download.docker.com/linux/static/stable/)
-ARG DOCKER_VERSION=26.0.0
+ARG DOCKER_VERSION=27.0.3
 # Add docker
 RUN echo "# Installing docker..." \
   && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
@@ -37,7 +37,7 @@ RUN echo "# Installing docker..." \
   && chmod 644 /usr/share/bash-completion/completions/docker
 
 # Docker Compose (https://github.com/docker/compose/releases/)
-ARG DOCKERCOMPOSE_VERSION=2.26.0
+ARG DOCKERCOMPOSE_VERSION=2.28.1
 # Install Docker Compose
 RUN echo "# Installing docker-compose..." \
   && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
@@ -62,7 +62,7 @@ RUN echo "# Installing socat..." \
 
 # Miniconda Version (https://repo.anaconda.com/miniconda/)
 # Python 3.12 conda 24.1.2 release 0 (https://docs.conda.io/projects/miniconda/en/latest/miniconda-release-notes.html)
-ARG MINICONDA_VERSION=py312_24.1.2-0
+ARG MINICONDA_VERSION=py312_24.5.0-0
 # Bash completion support for the conda command (https://github.com/tartansandal/conda-bash-completion/releases)
 ARG CONDA_BASHCOMPLETION_VERSION=1.7
 # Add conda
@@ -190,9 +190,9 @@ RUN echo "# Installing gvm..." \
   && printf "\n. /opt/gvm/scripts/completion\n" >> /home/${USER_NAME}/.bashrc
 
 # rbenv version to install (https://github.com/rbenv/rbenv/releases)
-ARG RBENV_VERSION=1.2.0
+ARG RBENV_VERSION=1.3.0
 # ruby-build version to install (https://github.com/rbenv/ruby-build/releases)
-ARG RUBY_BUILD_VERSION=20240319
+ARG RUBY_BUILD_VERSION=20240709.1
 # rbenv installation directory
 ENV RBENV_ROOT=/opt/rbenv
 # Install Ruby Environment Manager (requires curl, autoconf, bison, build-essential, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev)
@@ -312,7 +312,7 @@ RUN echo "# Installing git-lfs..." \
 # Install Rust (https://github.com/rust-lang/rust/releases)
 # (requires curl and build-essential as for GNU targets Rust uses gcc for linking, and gcc in turn calls ld)
 # see: https://github.com/rust-lang/rust/issues/71515
-ARG RUST_VERSION=1.75.0
+ARG RUST_VERSION=1.79.0
 # Use this path for shared installation
 ENV RUST_ROOT=/opt/rust
 RUN echo "# Installing Rust..." \
