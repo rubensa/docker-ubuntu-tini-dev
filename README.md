@@ -1,6 +1,6 @@
 # Docker image with development tools
 
-This is a Docker image based on [rubensa/ubuntu-tini-user](https://github.com/rubensa/docker-ubuntu-tini-user) and includes various development tools.  This image includes [old openssl](https://www.openssl.org/source/old/) version builds from [rubensa/ubuntu-openssl-old](https://github.com/rubensa/docker-ubuntu-openssl-old) to allow old Ruby versions to be installed.
+This is a Docker image based on [rubensa/ubuntu-tini-user](https://github.com/rubensa/docker-ubuntu-tini-user) 24.04 and includes various development tools.  This image includes [old openssl](https://www.openssl.org/source/old/) 24.04 version builds from [rubensa/ubuntu-openssl-old](https://github.com/rubensa/docker-ubuntu-openssl-old) to allow old Ruby versions to be installed.
 
 ## Building
 
@@ -11,7 +11,7 @@ You can build the image like this:
 
 DOCKER_REPOSITORY_NAME="rubensa"
 DOCKER_IMAGE_NAME="ubuntu-tini-dev"
-DOCKER_IMAGE_TAG="latest"
+DOCKER_IMAGE_TAG="24.04"
 
 docker buildx build --platform=linux/amd64,linux/arm64 --no-cache \
   -t "${DOCKER_REPOSITORY_NAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" \
@@ -32,7 +32,7 @@ You can run the container like this (change --rm with -d if you don't want the c
 
 DOCKER_REPOSITORY_NAME="rubensa"
 DOCKER_IMAGE_NAME="ubuntu-tini-dev"
-DOCKER_IMAGE_TAG="latest"
+DOCKER_IMAGE_TAG="24.04"
 
 # Get current user UID
 USER_ID=$(id -u)
