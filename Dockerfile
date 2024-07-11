@@ -352,7 +352,7 @@ ENV DEBIAN_FRONTEND=
 USER ${USER_NAME}
 
 # Set user home directory (see: https://github.com/microsoft/vscode-remote-release/issues/852)
-ENV HOME /home/$USER_NAME
+ENV HOME=/home/$USER_NAME
 
 # Allways execute tini, fixuid and docker-from-docker-init
 ENTRYPOINT [ "/sbin/tini", "--", "/sbin/fixuid", "/sbin/docker-from-docker-init.sh" ]
