@@ -22,7 +22,7 @@ RUN echo "# Installing curl, netcat-openbsd, unzip, zip, build-essential, git, b
   && if [ "$TARGETARCH" = "amd64" ]; then echo "# Installing rar..."; apt-get -y install --no-install-recommends rar 2>&1; fi
 
 # Docker CLI Version (https://download.docker.com/linux/static/stable/)
-ARG DOCKER_VERSION=27.2.1
+ARG DOCKER_VERSION=27.3.1
 # Add docker
 RUN echo "# Installing docker..." \
   && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
@@ -37,13 +37,22 @@ RUN echo "# Installing docker..." \
   && chmod 644 /usr/share/bash-completion/completions/docker
 
 # Docker Compose (https://github.com/docker/compose/releases/)
-ARG DOCKERCOMPOSE_VERSION=2.29.5
+ARG DOCKERCOMPOSE_VERSION=2.29.7
 # Install Docker Compose
 RUN echo "# Installing docker-compose..." \
   && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
   && mkdir -p /usr/local/lib/docker/cli-plugins \
   && curl -o /usr/local/lib/docker/cli-plugins/docker-compose -sSL https://github.com/docker/compose/releases/download/v${DOCKERCOMPOSE_VERSION}/docker-compose-linux-${TARGET} \
   && chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+
+# Docker buildx (https://github.com/docker/buildx/releases)
+ARG DOCKERBUILDX_VERSION=0.17.1
+# Install Docker buildx
+RUN echo "# Installing docker buildx..." \
+  && if [ "$TARGETARCH" = "arm64" ]; then TARGET=aarch64; elif [ "$TARGETARCH" = "amd64" ]; then TARGET=x86_64; else TARGET=$TARGETARCH; fi \
+  && mkdir -p /usr/local/lib/docker/cli-plugins \
+  && curl -o /usr/local/lib/docker/cli-plugins/buildx -sSL https://github.com/docker/buildx/releases/download/v${DOCKERBUILDX_VERSION}/buildx-v${DOCKERBUILDX_VERSION}-linux-${TARGET} \
+  && chmod +x /usr/local/lib/docker/cli-plugins/buildx
 
 # Default to root only access to the Docker socket, set up docker-from-docker-init.sh for non-root access
 RUN touch /var/run/docker-host.sock \
