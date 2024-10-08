@@ -265,7 +265,9 @@ RUN echo "# Installing OpenSSL 1.0..." \
   #
   # Link the system's certs to OpenSSL directory
   && rm -rf ${OPENSSL_ROOT_1_0}/certs \
-  && ln -s /etc/ssl/certs ${OPENSSL_ROOT_1_0}
+  && ln -s /etc/ssl/certs ${OPENSSL_ROOT_1_0} \
+  && echo "${OPENSSL_ROOT_1_0}/lib" > /etc/ld.so.conf.d/openssl-1.0.conf \
+  && ldconfig
 # Use RUBY_CONFIGURE_OPTS=--with-openssl-dir=${OPENSSL_ROOT_1_0} before the command to install the ruby version < 2.4
 
 # Ubuntu 22.04 comes with OpenSSL 3.0 and Ruby versions earlier than 3.1 used OpenSSL 1.1
@@ -276,7 +278,9 @@ COPY --from=rubensa/ubuntu-openssl-old ${OPENSSL_ROOT_1_1} ${OPENSSL_ROOT_1_1}
 RUN echo "# Installing OpenSSL 1.1..." \
   # Link the system's certs to OpenSSL directory
   && rm -rf ${OPENSSL_ROOT_1_1}/certs \
-  && ln -s /etc/ssl/certs ${OPENSSL_ROOT_1_1}
+  && ln -s /etc/ssl/certs ${OPENSSL_ROOT_1_1} \
+  && echo "${OPENSSL_ROOT_1_1}/lib" > /etc/ld.so.conf.d/openssl-1.1.conf \
+  && ldconfig
 # Use RUBY_CONFIGURE_OPTS=--with-openssl-dir=${OPENSSL_ROOT_1_1} before the command to install the ruby version < 3.1
 
 # .Net installer version (https://docs.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#scripted-install)
