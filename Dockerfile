@@ -352,7 +352,7 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 # Install .Net installer (requires curl; dotnet requires libicu-dev)
 RUN <<EOT
 echo "# Installing dotnet-install..."
-curl -o /usr/local/bin/dotnet-install.sh -k -sSL https://dot.net/v1/dotnet-install.sh
+curl -o /usr/local/bin/dotnet-install.sh -sSL https://dot.net/v1/dotnet-install.sh
 chmod 755 /usr/local/bin/dotnet-install.sh
 #
 # Setup .Net shared installation directory
