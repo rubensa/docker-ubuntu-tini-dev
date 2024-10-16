@@ -27,6 +27,23 @@ if [ "$TARGETARCH" = "amd64" ]; then
 fi
 EOT
 
+RUN <<EOT
+echo "# Configuring curl..."
+# Force ipv4 with curl
+# for root
+echo 'ipv4' >> ~/.curlrc
+# for the user
+echo 'ipv4' >> /home/${USER_NAME}/.curlrc
+if [ "$TARGETARCH" = "arm64" ]; then
+  # Temporal fix for SSL_ERROR_SYSCALL error
+  # see: https://github.com/curl/curl/issues/14154
+  # for root
+  echo 'insecure' >> ~/.curlrc
+  # for the user
+  echo 'insecure' >> /home/${USER_NAME}/.curlrc
+fi
+EOT
+
 # Docker CLI Version (https://download.docker.com/linux/static/stable/)
 ARG DOCKER_VERSION=27.3.1
 # Add docker
