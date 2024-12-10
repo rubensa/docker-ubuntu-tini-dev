@@ -45,7 +45,7 @@ fi
 EOT
 
 # Docker CLI Version (https://download.docker.com/linux/static/stable/)
-ARG DOCKER_VERSION=27.3.1
+ARG DOCKER_VERSION=27.4.0
 # Add docker
 RUN <<EOT
 echo "# Installing docker..."
@@ -68,7 +68,7 @@ chmod 644 /usr/share/bash-completion/completions/docker
 EOT
 
 # Docker Compose (https://github.com/docker/compose/releases/)
-ARG DOCKERCOMPOSE_VERSION=2.29.7
+ARG DOCKERCOMPOSE_VERSION=2.31.0
 # Install Docker Compose
 RUN <<EOT
 echo "# Installing docker-compose..."
@@ -85,7 +85,7 @@ chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 EOT
 
 # Docker buildx (https://github.com/docker/buildx/releases)
-ARG DOCKERBUILDX_VERSION=0.17.1
+ARG DOCKERBUILDX_VERSION=0.19.2
 # Install Docker buildx
 RUN <<EOT
 echo "# Installing docker buildx..."
@@ -124,7 +124,7 @@ EOT
 
 # Miniconda Version (https://repo.anaconda.com/miniconda/)
 # Python 3.12 conda 24.7.1 release 0 (https://docs.conda.io/projects/miniconda/en/latest/miniconda-release-notes.html)
-ARG MINICONDA_VERSION=py312_24.7.1-0
+ARG MINICONDA_VERSION=py312_24.9.2-0
 # Bash completion support for the conda command (https://github.com/tartansandal/conda-bash-completion/releases)
 ARG CONDA_BASHCOMPLETION_VERSION=1.7
 # Add conda
@@ -270,7 +270,7 @@ EOT
 # rbenv version to install (https://github.com/rbenv/rbenv/releases)
 ARG RBENV_VERSION=1.3.0
 # ruby-build version to install (https://github.com/rbenv/ruby-build/releases)
-ARG RUBY_BUILD_VERSION=20240917
+ARG RUBY_BUILD_VERSION=20241105
 # rbenv installation directory
 ENV RBENV_ROOT=/opt/rbenv
 # Install Ruby Environment Manager (requires curl, autoconf, bison, build-essential, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev)
@@ -406,7 +406,7 @@ EOT
 # Install Rust (https://github.com/rust-lang/rust/releases)
 # (requires curl and build-essential as for GNU targets Rust uses gcc for linking, and gcc in turn calls ld)
 # see: https://github.com/rust-lang/rust/issues/71515
-ARG RUST_VERSION=1.81.0
+ARG RUST_VERSION=1.83.0
 # Use this path for shared installation
 ENV RUST_ROOT=/opt/rust
 RUN <<EOT
