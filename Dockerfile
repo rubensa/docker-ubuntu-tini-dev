@@ -45,7 +45,7 @@ fi
 EOT
 
 # Docker CLI Version (https://download.docker.com/linux/static/stable/)
-ARG DOCKER_VERSION=27.5.1
+ARG DOCKER_VERSION=28.0.1
 # Add docker
 RUN <<EOT
 echo "# Installing docker..."
@@ -68,7 +68,7 @@ chmod 644 /usr/share/bash-completion/completions/docker
 EOT
 
 # Docker Compose (https://github.com/docker/compose/releases/)
-ARG DOCKERCOMPOSE_VERSION=2.32.4
+ARG DOCKERCOMPOSE_VERSION=2.34.0
 # Install Docker Compose
 RUN <<EOT
 echo "# Installing docker-compose..."
@@ -85,7 +85,7 @@ chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 EOT
 
 # Docker buildx (https://github.com/docker/buildx/releases)
-ARG DOCKERBUILDX_VERSION=0.20.1
+ARG DOCKERBUILDX_VERSION=0.22.0
 # Install Docker buildx
 RUN <<EOT
 echo "# Installing docker buildx..."
@@ -123,8 +123,8 @@ apt-get -y install --no-install-recommends socat 2>&1
 EOT
 
 # Miniconda Version (https://repo.anaconda.com/miniconda/)
-# Python 3.12.8 conda 24.11.1 release 0 (https://docs.conda.io/projects/miniconda/en/latest/miniconda-release-notes.html)
-ARG MINICONDA_VERSION=py312_24.11.1-0
+# Python 3.12.9 conda 25.1.1 release 2 (https://www.anaconda.com/docs/getting-started/miniconda/release-notes#miniconda-25-1-1-2)
+ARG MINICONDA_VERSION=py312_25.1.1-2
 # Bash completion support for the conda command (https://github.com/tartansandal/conda-bash-completion/releases)
 ARG CONDA_BASHCOMPLETION_VERSION=1.7
 # Add conda
@@ -212,7 +212,7 @@ chmod 644 /usr/share/bash-completion/completions/mvn
 EOT
 
 # Node Version Manager version to install (https://github.com/nvm-sh/nvm/releases)
-ARG NVM_VERSION=v0.40.1
+ARG NVM_VERSION=v0.40.2
 # Install nvm (requires curl)
 RUN <<EOT
 echo "# Installing nvm..."
@@ -270,7 +270,7 @@ EOT
 # rbenv version to install (https://github.com/rbenv/rbenv/releases)
 ARG RBENV_VERSION=1.3.2
 # ruby-build version to install (https://github.com/rbenv/ruby-build/releases)
-ARG RUBY_BUILD_VERSION=20250127
+ARG RUBY_BUILD_VERSION=20250318
 # rbenv installation directory
 ENV RBENV_ROOT=/opt/rbenv
 # Install Ruby Environment Manager (requires curl, autoconf, bison, build-essential, libssl-dev, libyaml-dev, libreadline6-dev, zlib1g-dev, libncurses5-dev, libffi-dev, libgdbm6, libgdbm-dev, libdb-dev)
@@ -406,7 +406,7 @@ EOT
 # Install Rust (https://github.com/rust-lang/rust/releases)
 # (requires curl and build-essential as for GNU targets Rust uses gcc for linking, and gcc in turn calls ld)
 # see: https://github.com/rust-lang/rust/issues/71515
-ARG RUST_VERSION=1.84.0
+ARG RUST_VERSION=1.85.0
 # Use this path for shared installation
 ENV RUST_ROOT=/opt/rust
 RUN <<EOT
