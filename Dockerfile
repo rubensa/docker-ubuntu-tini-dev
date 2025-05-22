@@ -101,6 +101,16 @@ curl -o /usr/local/lib/docker/cli-plugins/buildx -sSL https://github.com/docker/
 chmod +x /usr/local/lib/docker/cli-plugins/buildx
 EOT
 
+# Docker scout-cli (https://github.com/docker/scout-cli/releases)
+ARG DOCKERSCOUTCLI_VERSION=1.18.0
+# Install Docker scout-cli
+RUN <<EOT
+echo "# Installing docker scout-cli..."
+mkdir -p /usr/local/lib/docker/cli-plugins
+curl -o /usr/local/lib/docker/cli-plugins/scout-cli -sSL https://github.com/docker/scout-cli/releases/download/v${DOCKERSCOUTCLI_VERSION}/scout-cli_v${DOCKERSCOUTCLI_VERSION}_linux_${TARGETARCH}
+chmod +x /usr/local/lib/docker/cli-plugins/scout-cli
+EOT
+
 # Default to root only access to the Docker socket, set up docker-from-docker-init.sh for non-root access
 RUN <<EOT
 touch /var/run/docker-host.sock
