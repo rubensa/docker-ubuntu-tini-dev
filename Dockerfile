@@ -165,7 +165,10 @@ echo "# Configuring conda for '${USER_NAME}'..."
 printf "\n. /opt/conda/etc/profile.d/conda.sh\n" >> /home/${USER_NAME}/.bashrc
 #
 # Use shared folder for packages and environments
-printf "envs_dirs:\n  - /opt/conda/envs\npkgs_dirs:\n   - /opt/conda/pkgs\n" >> /home/${USER_NAME}/.condarc
+printf "envs_dirs:\n  - /opt/conda/envs\npkgs_dirs:\n  - /opt/conda/pkgs\n" >> /home/${USER_NAME}/.condarc
+# Configure conda repositories Terms of Service auto acceptance
+# see: https://github.com/anaconda/conda-anaconda-tos?tab=readme-ov-file#auto-acceptance
+printf "plugins:\n  auto_accept_tos: true\n" >> /home/${USER_NAME}/.condarc
 chown ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/.condarc
 #
 # See https://github.com/ContinuumIO/anaconda-issues/issues/11148
